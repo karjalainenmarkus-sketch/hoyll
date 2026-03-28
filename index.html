@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoyll — Performance through connection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;1,400&family=Figtree:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── DESIGN TOKENS ── */
+    :root {
+      /* Colors */
+      --dark-blue:  #0d1534;
+      --mid-blue:   #1e2ede;
+      --light-blue: #eeeff8;
+      --purple:     #bbb3ed;
+      --white:      #ffffff;
+
+      /* Typography — Desktop */
+      --font-serif: 'Newsreader', serif;
+      --font-sans:  'Figtree', sans-serif;
+
+      --h1-size:    120px;
+      --h1-lh:      1;
+      --h1-ls:      -3px;
+
+      --h2-size:    60px;
+      --h2-lh:      1;
+      --h2-ls:      -2px;
+
+      --h3-size:    40px;
+      --h3-lh:      1.2;
+      --h3-ls:      -1px;
+
+      --body1-size: 30px;
+      --body1-lh:   1.3;
+      --body1-ls:   -1px;
+
+      --body2-size: 24px;
+      --body2-lh:   1.2;
+      --body2-ls:   0px;
+
+      --body2b-lh:  1.3;
+    }
+
+    /* Mobile type scale */
+    @media (max-width: 768px) {
+      :root {
+        --h1-size:    54px;
+        --h1-ls:      -2px;
+
+        --h2-size:    44px;
+        --h2-ls:      -1px;
+
+        --h3-size:    28px;
+        --h3-ls:      -1px;
+
+        --body1-size: 20px;
+        --body1-ls:   -1px;
+
+        --body2-size: 18px;
+        --body2-lh:   1.3;
+        --body2-ls:   -1px;
+      }
+    }
+
+    /* ── BASE ── */
+    body {
+      font-family: var(--font-sans);
+      color: var(--dark-blue);
+      background: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── TYPE UTILITIES ── */
+    .h1 {
+      font-family: var(--font-serif);
+      font-size: var(--h1-size);
+      font-weight: 400;
+      line-height: var(--h1-lh);
+      letter-spacing: var(--h1-ls);
+    }
+    .h2 {
+      font-family: var(--font-serif);
+      font-size: var(--h2-size);
+      font-weight: 400;
+      line-height: var(--h2-lh);
+      letter-spacing: var(--h2-ls);
+    }
+    .h3 {
+      font-family: var(--font-sans);
+      font-size: var(--h3-size);
+      font-weight: 400;
+      line-height: var(--h3-lh);
+      letter-spacing: var(--h3-ls);
+    }
+    .body1 {
+      font-size: var(--body1-size);
+      font-weight: 400;
+      line-height: var(--body1-lh);
+      letter-spacing: var(--body1-ls);
+    }
+    .body1-bold {
+      font-size: var(--body1-size);
+      font-weight: 700;
+      line-height: var(--body1-lh);
+      letter-spacing: var(--body1-ls);
+    }
+    .body2 {
+      font-size: var(--body2-size);
+      font-weight: 400;
+      line-height: var(--body2-lh);
+      letter-spacing: var(--body2-ls);
+    }
+    .body2-bold {
+      font-size: var(--body2-size);
+      font-weight: 700;
+      line-height: var(--body2b-lh);
+      letter-spacing: var(--body2-ls);
+    }
+    .blue  { color: var(--mid-blue); }
+    .serif { font-family: var(--font-serif); }
+
+    /* ── SHARED COMPONENTS ── */
+    .btn-blue {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--mid-blue);
+      color: var(--white);
+      border: none;
+      border-radius: 100px;
+      padding: 20px 50px;
+      font-family: var(--font-sans);
+      font-size: var(--body2-size);
+      font-weight: 600;
+      letter-spacing: var(--body2-ls);
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.35s ease;
+      z-index: 0;
+    }
+    .btn-blue::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--purple);
+      border-radius: inherit;
+      transform: translateX(-101%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: -1;
+    }
+    .btn-blue:hover::before { transform: translateX(0); }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--mid-blue);
+      border-radius: 100px;
+      padding: 16px 32px;
+      font-family: var(--font-sans);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--mid-blue);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.35s ease;
+      z-index: 0;
+    }
+    .btn-outline::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--mid-blue);
+      border-radius: inherit;
+      transform: translateX(-101%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: -1;
+    }
+    .btn-outline:hover::before { transform: translateX(0); }
+    .btn-outline:hover { color: var(--white); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border: 2px solid var(--light-blue);
+      border-radius: 100px;
+      padding: 10px 20px;
+      font-size: var(--body2-size);
+      font-weight: 700;
+      color: var(--mid-blue);
+      letter-spacing: 0.72px;
+      text-transform: uppercase;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-top: 6px solid var(--mid-blue);
+      height: 89px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 60px;
+    }
+    .nav-logo { display: flex; justify-content: center; align-items: center; }
+    .nav-logo svg { height: 20px; width: auto; display: block; }
+    .nav-links { display: flex; gap: 48px; }
+    .nav-links a {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--dark-blue);
+      text-decoration: none;
+      letter-spacing: -0.22px;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 100%;
+      height: 1.5px;
+      background: var(--dark-blue);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-cta { display: flex; justify-content: flex-end; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 120px 0;
+      text-align: center;
+    }
+    .hero-sub {
+      max-width: 900px;
+      margin: 44px auto 0;
+    }
+    .hero-sub p + p { margin-top: 24px; }
+    .hero-cta { margin-top: 52px; }
+    .hero-photo {
+      margin: 52px 60px 0;
+      border-radius: 30px;
+      overflow: hidden;
+      height: clamp(240px, 32vw, 551px);
+    }
+    .hero-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+    }
+
+    /* ── PROBLEM / SOLUTION ── */
+    .problem-section {
+      padding: 100px 120px;
+      text-align: center;
+    }
+    .arrow-divider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 52px auto;
+    }
+    .arrow-divider .line {
+      width: 2px;
+      height: 120px;
+      background: var(--mid-blue);
+    }
+    .arrow-divider .arrowhead {
+      width: 0; height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 12px solid var(--mid-blue);
+    }
+    .solution-photos {
+      display: grid;
+      grid-template-columns: 372fr 348fr 579fr;
+      gap: 20px;
+      margin: 52px auto 0;
+      max-width: 1400px;
+    }
+    .rnd-photo {
+      border-radius: 20px;
+      overflow: hidden;
+      height: 375px;
+    }
+    .rnd-photo img, .rnd-photo video { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── REAL RELATIONSHIPS ── */
+    .real-rel {
+      background: var(--light-blue);
+      padding: 100px 120px;
+      text-align: center;
+    }
+    .feature-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 60px;
+    }
+    .feature-card {
+      border: 1px solid var(--purple);
+      border-radius: 20px;
+      padding: 36px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .feature-card-icon { display: flex; align-items: flex-start; }
+    .feature-card-icon svg { display: block; height: 48px; width: auto; }
+    .why-box {
+      margin-top: 80px;
+      padding-top: 52px;
+      border-top: 1px solid var(--purple);
+    }
+
+    /* ── STATS ── */
+    .stats-outer { padding: 0 60px 80px; }
+    .stats-wrap {
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+    .stats-bg { position: absolute; inset: 0; }
+    .stats-bg img { width: 100%; height: 100%; object-fit: cover; }
+    .stats-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 21, 52, 0.55);
+    }
+    .stats-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 80px 100px;
+      gap: 40px;
+    }
+    .stat-desc { margin-top: 16px; color: var(--white); max-width: 430px; }
+
+    /* ── FOR YOU IF ── */
+    .for-you {
+      padding: 100px 120px;
+      text-align: center;
+    }
+    .criteria-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 52px;
+      max-width: 1340px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .criteria-item {
+      padding: 28px 0;
+      border-top: 1px solid var(--purple);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      text-align: left;
+    }
+    .criteria-item:nth-child(odd)  { padding-right: 60px; }
+    .criteria-item:nth-child(even) { padding-left: 60px; }
+
+    /* ── HOYLL IS NOT ── */
+    .not-section {
+      padding: 80px 120px;
+      text-align: center;
+    }
+    .not-items {
+      display: flex;
+      justify-content: center;
+      gap: 52px;
+      flex-wrap: wrap;
+      margin-top: 60px;
+    }
+    .not-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .x-icon {
+      width: 45px;
+      height: 45px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── CURATED ── */
+    .curated { padding: 80px 120px; }
+    .curated-header { text-align: center; margin-bottom: 60px; }
+    .curated-grid {
+      display: grid;
+      grid-template-columns: 604fr 664fr;
+      gap: 60px;
+      align-items: start;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .curated-photo { border-radius: 20px; overflow: hidden; height: 443px; }
+    .curated-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .feature-list { padding-top: 16px; }
+    .feature-row { padding: 24px 0; border-top: 1px solid var(--purple); }
+    .feature-row-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+    .feature-row-desc { padding-left: 38px; }
+    .outcomes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 80px;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    .outcome-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .outcome-item svg { display: block; height: 52px; width: auto; }
+
+    /* ── GETTING STARTED ── */
+    .getting-started { padding: 100px 120px; text-align: center; }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 60px auto 0;
+      max-width: 1160px;
+    }
+    .step {
+      background: var(--light-blue);
+      border-radius: 20px;
+      padding: 44px 52px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      text-align: left;
+      column-gap: 0;
+      row-gap: 8px;
+    }
+
+    /* ── DEPTH ── */
+    .depth { padding: 80px 120px; text-align: center; }
+    .depth-photos {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 40px;
+    }
+    .depth-photo { border-radius: 20px; overflow: hidden; height: 321px; position: relative; }
+    .depth-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .depth-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.65));
+      border-radius: 20px;
+    }
+    .depth-caption {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      color: var(--white);
+      width: calc(100% - 32px);
+      text-align: center;
+    }
+
+    /* ── PRICING ── */
+    .pricing { padding: 80px 120px; text-align: center; }
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      margin: 52px auto 0;
+      max-width: 1160px;
+    }
+    .pricing-card { border-radius: 20px; padding: 52px 60px; text-align: left; }
+    .pricing-card.light { background: var(--light-blue); }
+    .pricing-card.dark  { background: var(--dark-blue); }
+    .plan-price {
+      font-family: var(--font-serif);
+      font-size: var(--h2-size);
+      font-weight: 400;
+      letter-spacing: var(--h2-ls);
+      margin-top: 52px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .plan-per {
+      font-family: var(--font-sans);
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: -0.18px;
+    }
+    .pricing-card-cta { margin-top: 28px; }
+
+    /* ── WHO WE ARE ── */
+    .who { padding: 80px 120px; text-align: center; }
+    .founders {
+      display: flex;
+      justify-content: center;
+      gap: 140px;
+      margin-top: 80px;
+      flex-wrap: wrap;
+    }
+    .founder { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .founder-photo {
+      width: 135px;
+      height: 135px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .founder-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .founder-role { margin-top: 4px; max-width: 260px; }
+    .founder-quote {
+      text-align: center;
+      max-width: 580px;
+      margin: 64px auto 0;
+    }
+
+    /* ── BETWEEN US ── */
+    .between-us { padding: 80px 120px; text-align: center; }
+    .credentials-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 52px;
+      max-width: 1160px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cred-item {
+      padding: 28px 60px 28px 0;
+      border-top: 1px solid var(--purple);
+      text-align: left;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .cred-icon { flex-shrink: 0; }
+    .cred-icon svg { display: block; height: 36px; width: auto; }
+    .cred-item:nth-child(even) {
+      padding-left: 60px;
+      padding-right: 0;
+    }
+    .cred-item.last { border-bottom: 1px solid var(--purple); }
+
+    /* ── FAQ ── */
+    .faq { padding: 80px 120px; }
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+    .faq-item { background: var(--light-blue); border-radius: 20px; overflow: hidden; }
+    .faq-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 36px 52px;
+      text-align: left;
+      font-family: var(--font-sans);
+      font-size: var(--body2-size);
+      font-weight: 700;
+      line-height: var(--body2b-lh);
+      letter-spacing: var(--body2-ls);
+      color: var(--dark-blue);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .faq-chevron { flex-shrink: 0; transition: transform 0.25s ease; }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+    .faq-answer-inner { padding: 0 52px 36px; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+    /* ── FOOTER CTA ── */
+    .footer-cta-outer { padding: 0; }
+    .footer-cta-wrap {
+      border-radius: 0;
+      overflow: hidden;
+      position: relative;
+      height: 695px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .footer-cta-bg { position: absolute; inset: 0; }
+    .footer-cta-bg video { width: 100%; height: 100%; object-fit: cover; }
+    .footer-cta-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(30, 46, 222, 0.6);
+    }
+    .footer-cta-content { position: relative; z-index: 1; text-align: center; padding: 60px; color: var(--white); }
+    .footer-cta-content .btn-footer {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--purple);
+      color: var(--dark-blue);
+      border: none;
+      border-radius: 100px;
+      padding: 20px 50px;
+      font-family: var(--font-sans);
+      font-size: var(--body2-size);
+      font-weight: 600;
+      letter-spacing: var(--body2-ls);
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.35s ease;
+      z-index: 0;
+    }
+    .footer-cta-content .btn-footer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--mid-blue);
+      border-radius: inherit;
+      transform: translateX(-101%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: -1;
+    }
+    .footer-cta-content .btn-footer:hover::before { transform: translateX(0); }
+    .footer-cta-content .btn-footer:hover { color: var(--white); }
+    .footer-bar {
+      background: var(--dark-blue);
+      padding: 24px 60px;
+      text-align: center;
+    }
+    .footer-bar p { color: var(--white); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .nav { padding: 0 32px; }
+      .nav-links { gap: 28px; }
+      .hero, .problem-section, .real-rel, .for-you, .not-section,
+      .curated, .getting-started, .depth, .pricing,
+      .who, .between-us, .faq { padding-left: 60px; padding-right: 60px; }
+      .feature-cards { grid-template-columns: 1fr; }
+      .depth-photos { grid-template-columns: repeat(2, 1fr); }
+      .pricing-cards { grid-template-columns: 1fr; max-width: 560px; }
+      .outcomes { grid-template-columns: repeat(2, 1fr); }
+      .stats-content { padding: 60px; }
+      .solution-photos { grid-template-columns: 1fr 1fr; }
+      .solution-photos .rnd-photo:last-child { grid-column: span 2; }
+      .curated-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      /* NAV — hamburger */
+      .nav { padding: 0 20px; height: 64px; grid-template-columns: auto 1fr auto; gap: 0; }
+      .nav-links { display: none; position: fixed; inset: 0; top: 64px; background: var(--white); flex-direction: column; align-items: center; justify-content: center; gap: 40px; z-index: 99; }
+      .nav-links.open { display: flex; }
+      .nav-links a { font-size: 28px; }
+      .nav-logo { justify-content: center; }
+      .nav-logo svg { height: 16px; }
+      .nav-cta { display: none; }
+      .hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        z-index: 101;
+      }
+      .hamburger span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--dark-blue);
+        border-radius: 2px;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        transform-origin: center;
+      }
+      .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      .hamburger.open span:nth-child(2) { opacity: 0; }
+      .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+      /* SECTIONS */
+      .hero { padding: 40px 20px 0; text-align: center; }
+      .hero-sub { margin-top: 24px; }
+      .hero-cta { margin-top: 32px; justify-content: center; }
+      .hero-photo { margin: 32px 0 0; border-radius: 0; }
+      .problem-section, .real-rel, .for-you, .not-section, .curated,
+      .getting-started, .depth, .pricing, .who, .between-us, .faq { padding: 52px 20px; }
+      .problem-section { text-align: center; }
+      .stats-outer { padding: 0 0 52px; }
+      .stats-wrap { border-radius: 0; }
+      .stats-content { grid-template-columns: 1fr; padding: 60px 28px; gap: 48px; text-align: left; }
+      .stats-content .stat-desc { max-width: none; }
+      .solution-photos { grid-template-columns: 1fr; gap: 12px; }
+      .solution-photos .rnd-photo:last-child { grid-column: auto; }
+      .solution-photos .rnd-photo:first-child { height: 280px; }
+      .solution-photos .rnd-photo:nth-child(2) { height: 200px; }
+      .solution-photos .rnd-photo:last-child { height: 200px; }
+      .real-rel { text-align: center; }
+      .feature-cards { grid-template-columns: 1fr; }
+      .why-box { text-align: center; }
+      .criteria-grid { grid-template-columns: 1fr; }
+      .criteria-item:nth-child(odd), .criteria-item:nth-child(even) { padding-left: 0; padding-right: 0; }
+      .not-section { text-align: center; padding-left: 0; padding-right: 0; }
+      .not-section h2 { padding: 0 20px; }
+      .not-items { flex-direction: row; flex-wrap: nowrap; overflow-x: auto; align-items: center; gap: 32px; margin: 40px 0 0; padding: 0 20px 16px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      .not-items::-webkit-scrollbar { display: none; }
+      .not-item { flex-shrink: 0; }
+      .curated-grid { grid-template-columns: 1fr; }
+      .getting-started { text-align: center; }
+      .step { grid-template-columns: 1fr; }
+      .step-title { text-align: center; }
+      .depth { text-align: center; }
+      .depth-photos { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .depth-photo { height: 220px; }
+      .outcomes { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .pricing { text-align: center; }
+      .pricing-cards { grid-template-columns: 1fr; }
+      .who { text-align: center; }
+      .founders { flex-direction: column; gap: 40px; }
+      .founder-quote { text-align: center; }
+      .between-us { text-align: left; }
+      .credentials-grid { grid-template-columns: 1fr; }
+      .cred-item { padding: 24px 0; }
+      .cred-item:nth-child(even) { padding-left: 0; padding-right: 0; }
+      .cred-item.last { border-bottom: none; }
+      .credentials-grid .cred-item:last-child { border-bottom: 1px solid var(--purple); }
+      .faq { text-align: center; }
+      .faq-btn { padding: 20px 20px; font-size: 18px; text-align: left; }
+      .faq-answer-inner { padding: 0 20px 20px; }
+      .footer-cta-outer { padding: 0; }
+      .footer-cta-wrap { height: auto; min-height: 420px; }
+      .footer-cta-content { padding: 60px 24px; }
+      .footer-bar { padding: 20px; }
+    }
+
+    /* ── PAGE LOADER ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+    #loader svg { animation: loaderPulse 1.2s ease-in-out infinite; }
+    @keyframes loaderPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.95); }
+    }
+
+    /* ── SCROLL REVEAL BASE ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* stagger delays for children */
+    .reveal-group > * {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal-group.visible > *:nth-child(1) { transition-delay: 0s; }
+    .reveal-group.visible > *:nth-child(2) { transition-delay: 0.08s; }
+    .reveal-group.visible > *:nth-child(3) { transition-delay: 0.16s; }
+    .reveal-group.visible > *:nth-child(4) { transition-delay: 0.24s; }
+    .reveal-group.visible > *:nth-child(5) { transition-delay: 0.32s; }
+    .reveal-group.visible > * { opacity: 1; transform: translateY(0); }
+
+    /* ── HERO ENTRANCE ── */
+    .hero-word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: heroWordIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes heroWordIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .faq-item.open .faq-answer { max-height: 500px; }
+  </style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <svg width="111" height="28" viewBox="0 0 111 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.83572 26.5042H0V0.66445H4.83572V11.2218H16.7589V0.66445H21.5946V26.5042H16.7589V15.3193H4.83572V26.5042Z" fill="#0D1534"/><path d="M30.4723 25.5629C28.5651 24.4924 27.064 22.9358 25.9688 20.8933C24.8737 18.8507 24.3262 16.4144 24.3262 13.5843C24.3262 10.7543 24.8737 8.49635 25.9688 6.44148C27.064 4.3866 28.5713 2.79931 30.4908 1.67958C32.4103 0.559861 34.5759 0 36.9876 0C39.3994 0 41.5711 0.566013 43.5029 1.69804C45.4348 2.83007 46.9606 4.42352 48.0803 6.47839C49.2 8.53327 49.7599 10.9019 49.7599 13.5843C49.7599 16.2667 49.2062 18.8199 48.0987 20.8748C46.9913 22.9297 45.4717 24.4924 43.5399 25.5629C41.608 26.6334 39.424 27.1686 36.9876 27.1686C34.5513 27.1686 32.3796 26.6334 30.4723 25.5629ZM41.0482 21.9638C42.2294 21.2255 43.1461 20.1427 43.7983 18.7154C44.4504 17.288 44.7765 15.5777 44.7765 13.5843C44.7765 11.591 44.4504 10.0221 43.7983 8.58248C43.1461 7.14284 42.2294 6.03542 41.0482 5.26023C39.8669 4.48504 38.5134 4.09744 36.9876 4.09744C35.4619 4.09744 34.1207 4.47889 32.964 5.24178C31.8074 6.00466 30.9092 7.10593 30.2693 8.54557C29.6295 9.98521 29.3095 11.6648 29.3095 13.5843C29.3095 15.5038 29.6295 17.2511 30.2693 18.6784C30.9092 20.1058 31.8074 21.1947 32.964 21.9453C34.1207 22.6959 35.4619 23.0712 36.9876 23.0712C38.5134 23.0712 39.8669 22.7021 41.0482 21.9638Z" fill="#0D1534"/><path d="M57.7336 26.5042V16.0206L47.9883 0.66445H53.7838L58.9517 9.52379C59.4931 10.4097 59.9361 11.2218 60.2806 11.9601C60.5021 11.4925 60.9328 10.6804 61.5726 9.52379L66.8144 0.66445H72.3884L62.6062 16.0206V26.5042H57.7336Z" fill="#0D1534"/><path d="M91.5462 26.5042H73.7168V0.66445H78.5525V22.4067H91.5462V26.5042Z" fill="#0D1534"/><path d="M111 26.5042H93.1709V0.66445H98.0066V22.4067H111V26.5042Z" fill="#0D1534"/></svg>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="hamburger" aria-label="Menu" style="display:none;">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links">
+    <a href="#what">What is Hoyll</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Memberships</a>
+  </div>
+  <div class="nav-logo">
+    <svg width="111" height="28" viewBox="0 0 111 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.83572 26.5042H0V0.66445H4.83572V11.2218H16.7589V0.66445H21.5946V26.5042H16.7589V15.3193H4.83572V26.5042Z" fill="#0D1534"/><path d="M30.4723 25.5629C28.5651 24.4924 27.064 22.9358 25.9688 20.8933C24.8737 18.8507 24.3262 16.4144 24.3262 13.5843C24.3262 10.7543 24.8737 8.49635 25.9688 6.44148C27.064 4.3866 28.5713 2.79931 30.4908 1.67958C32.4103 0.559861 34.5759 0 36.9876 0C39.3994 0 41.5711 0.566013 43.5029 1.69804C45.4348 2.83007 46.9606 4.42352 48.0803 6.47839C49.2 8.53327 49.7599 10.9019 49.7599 13.5843C49.7599 16.2667 49.2062 18.8199 48.0987 20.8748C46.9913 22.9297 45.4717 24.4924 43.5399 25.5629C41.608 26.6334 39.424 27.1686 36.9876 27.1686C34.5513 27.1686 32.3796 26.6334 30.4723 25.5629ZM41.0482 21.9638C42.2294 21.2255 43.1461 20.1427 43.7983 18.7154C44.4504 17.288 44.7765 15.5777 44.7765 13.5843C44.7765 11.591 44.4504 10.0221 43.7983 8.58248C43.1461 7.14284 42.2294 6.03542 41.0482 5.26023C39.8669 4.48504 38.5134 4.09744 36.9876 4.09744C35.4619 4.09744 34.1207 4.47889 32.964 5.24178C31.8074 6.00466 30.9092 7.10593 30.2693 8.54557C29.6295 9.98521 29.3095 11.6648 29.3095 13.5843C29.3095 15.5038 29.6295 17.2511 30.2693 18.6784C30.9092 20.1058 31.8074 21.1947 32.964 21.9453C34.1207 22.6959 35.4619 23.0712 36.9876 23.0712C38.5134 23.0712 39.8669 22.7021 41.0482 21.9638Z" fill="#0D1534"/><path d="M57.7336 26.5042V16.0206L47.9883 0.66445H53.7838L58.9517 9.52379C59.4931 10.4097 59.9361 11.2218 60.2806 11.9601C60.5021 11.4925 60.9328 10.6804 61.5726 9.52379L66.8144 0.66445H72.3884L62.6062 16.0206V26.5042H57.7336Z" fill="#0D1534"/><path d="M91.5462 26.5042H73.7168V0.66445H78.5525V22.4067H91.5462V26.5042Z" fill="#0D1534"/><path d="M111 26.5042H93.1709V0.66445H98.0066V22.4067H111V26.5042Z" fill="#0D1534"/></svg>
+  </div>
+  <div class="nav-cta">
+    <a href="#pricing" class="btn-outline">Find Your Hoyll</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="what">
+  <h1 class="h1">
+    <span class="hero-word" style="animation-delay:0.1s">Performance</span>
+    <span class="hero-word" style="animation-delay:0.2s"> through</span><br>
+    <span class="hero-word blue" style="animation-delay:0.35s">connection</span>
+  </h1>
+  <div class="hero-sub body1 reveal" style="transition-delay:0.5s">
+    <p><em>Hoyll (inspired by the Welsh word "hwyl"—which nobody can pronounce) is the feeling of energy, uplift, and connection that comes from doing meaningful work with others.</em></p>
+    <p>A facilitated peer roundtable for high-responsibility executives—designed to turn connection into a performance advantage.</p>
+  </div>
+  <div class="hero-cta reveal" style="transition-delay:0.65s">
+    <a href="#pricing" class="btn-blue">Find Your Hoyll</a>
+  </div>
+</section>
+<div class="hero-photo">
+  <img src="group-table.png" alt="People connecting">
+</div>
+
+<!-- PROBLEM / SOLUTION -->
+<section class="problem-section" id="how">
+  <span class="badge reveal">The Real Problem</span>
+  <p class="h3 reveal" style="max-width:1068px; margin:32px auto 0;">We've optimized routines, calendars, and careers while ignoring one of the single greatest drivers of health, happiness, and performance.</p>
+
+  <div class="arrow-divider reveal">
+    <div class="line"></div>
+    <div class="arrowhead"></div>
+  </div>
+
+  <span class="badge reveal">The Real Solution</span>
+  <p class="h3 reveal" style="max-width:1068px; margin:32px auto 0;">Turns out, you don't need another collagen peptide or influencer protocol. You need a core crew of people like you to talk with regularly. <span class="blue">Hoyll is that crew.</span></p>
+
+  <div class="solution-photos">
+    <div class="rnd-photo">
+      <img src="people-hug.png" alt="">
+    </div>
+    <div class="rnd-photo">
+      <video src="people-video.mp4" autoplay muted loop playsinline></video>
+    </div>
+    <div class="rnd-photo">
+      <img src="people-cafe.png" alt="">
+    </div>
+  </div>
+
+  <div style="margin-top:60px;">
+    <a href="#pricing" class="btn-blue">Find Your Hoyll</a>
+  </div>
+</section>
+
+<!-- REAL RELATIONSHIPS -->
+<section class="real-rel">
+  <h2 class="h1">Real relationships.<br><span class="blue">Real progress.</span></h2>
+  <p class="body1" style="max-width:1157px; margin:40px auto 0;">A members-only community where likeminded people meet regularly in curated small group "Hoylls" to solve real problems, trade advice, and hold each other accountable.</p>
+
+  <div class="feature-cards">
+    <div class="feature-card">
+      <div class="feature-card-icon"><svg width="49" height="52" viewBox="0 0 49 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24.3834 25.834C31.0232 25.834 36.4357 19.9475 36.4357 12.7496C36.4357 5.60758 31.0512 0 24.3834 0C17.7714 0 12.3311 5.71922 12.3311 12.8054C12.3311 19.9753 17.7714 25.834 24.3834 25.834ZM24.3834 21.6214C20.3102 21.6214 16.8229 17.7435 16.8229 12.8054C16.8229 7.95108 20.2543 4.21266 24.3834 4.21266C28.54 4.21266 31.9436 7.86738 31.9436 12.7496C31.9436 17.6877 28.5126 21.6214 24.3834 21.6214ZM6.86304 51.6681H41.9036C46.5351 51.6681 48.7388 50.2732 48.7388 47.2044C48.7388 39.8949 39.5045 29.3214 24.3834 29.3214C9.23442 29.3214 0 39.8949 0 47.2044C0 50.2732 2.20397 51.6681 6.86304 51.6681ZM5.52393 47.4554C4.79859 47.4554 4.49165 47.2601 4.49165 46.6743C4.49165 42.071 11.5779 33.5341 24.3834 33.5341C37.1607 33.5341 44.2473 42.071 44.2473 46.6743C44.2473 47.2601 43.9679 47.4554 43.2429 47.4554H5.52393Z" fill="#1E2EDE"/></svg></div>
+      <p class="body2"><span class="body2-bold">6–8 person small groups</span> carefully curated by experts.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-icon"><svg width="35" height="53" viewBox="0 0 35 53" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.12617 17.8962H28.7497C31.5957 17.8962 32.9464 16.5938 32.9464 13.8201V4.07609C32.9464 1.30242 31.5957 0 28.7497 0H6.12617C3.28016 0 1.92951 1.30242 1.92951 4.07609V13.8201C1.92951 16.5938 3.28016 17.8962 6.12617 17.8962ZM7.47684 13.8442C6.5121 13.8442 5.98149 13.3619 5.98149 12.4212V5.45089C5.98149 4.55847 6.5121 4.05197 7.47684 4.05197H27.3991C28.3638 4.05197 28.8944 4.55847 28.8944 5.45089V12.4212C28.8944 13.3619 28.3638 13.8442 27.3991 13.8442H7.47684ZM6.87387 26.0242H11.4806V15.7737H6.87387V26.0242ZM23.3953 26.0242H28.002V15.7737H23.3953V26.0242ZM3.97961 35.8648H30.8963C33.5493 35.8648 34.8759 34.6106 34.8759 32.0299V28.3638C34.8759 25.7831 33.5493 24.5289 30.8963 24.5289H3.97961C1.32654 24.5289 0 25.7831 0 28.3638V32.0299C0 34.6106 1.32654 35.8648 3.97961 35.8648ZM5.08907 31.8128C4.48611 31.8128 4.05197 31.4269 4.05197 30.8722V29.5215C4.05197 28.9668 4.48611 28.5809 5.08907 28.5809H29.7868C30.3898 28.5809 30.8239 28.9668 30.8239 29.5215V30.8722C30.8239 31.4269 30.3898 31.8128 29.7868 31.8128H5.08907ZM4.55847 52.2174H5.30616C6.48799 52.2174 7.30801 51.3975 7.30801 50.2154V34.6106H2.5566V50.2154C2.5566 51.3975 3.37664 52.2174 4.55847 52.2174ZM6.05386 41.4845H28.8221V37.8425H6.05386V41.4845ZM29.5697 52.2174H30.3174C31.4992 52.2174 32.3193 51.3975 32.3193 50.2154V34.6106H27.5679V50.2154C27.5679 51.3975 28.3879 52.2174 29.5697 52.2174Z" fill="#1E2EDE"/></svg></div>
+      <p class="body2"><span class="body2-bold">Facilitated bi-weekly sessions</span> designed to go deep, not wide.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-icon"><svg width="41" height="52" viewBox="0 0 41 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0947 33.5735H29.5215C30.3898 33.5735 31.0169 32.8982 31.0169 32.054C31.0169 31.2339 30.3898 30.6069 29.5215 30.6069H11.0947C10.2264 30.6069 9.57521 31.2339 9.57521 32.054C9.57521 32.8982 10.2264 33.5735 11.0947 33.5735ZM11.0947 40.8091H19.8016C20.6699 40.8091 21.2969 40.1821 21.2969 39.362C21.2969 38.5178 20.6699 37.8425 19.8016 37.8425H11.0947C10.2264 37.8425 9.57521 38.5178 9.57521 39.362C9.57521 40.1821 10.2264 40.8091 11.0947 40.8091ZM15.0743 24.7701H16.9556C17.1244 24.7701 17.245 24.8425 17.3897 24.9871L18.7404 26.2896C19.8016 27.3991 20.8146 27.3749 21.8758 26.2896L23.2265 24.9871C23.3712 24.8666 23.4677 24.7701 23.6606 24.7701H25.5178C27.0372 24.7701 27.7608 24.0707 27.7608 22.5753V20.694C27.7608 20.5251 27.7849 20.3805 27.9297 20.2598L29.2562 18.9092C30.3416 17.848 30.3416 16.835 29.2562 15.7496L27.9297 14.4231C27.7849 14.3025 27.7608 14.1578 27.7608 13.9889V12.1077C27.7608 10.5882 27.0614 9.88872 25.5178 9.88872H23.6606C23.4677 9.88872 23.3712 9.79225 23.2265 9.69579L21.8758 8.39338C20.8146 7.2839 19.8016 7.30801 18.7404 8.39338L17.3897 9.69579C17.2691 9.84051 17.1244 9.88872 16.9556 9.88872H15.0743C13.5548 9.88872 12.8313 10.5641 12.8313 12.1077V13.9889C12.8313 14.1578 12.8071 14.3025 12.6624 14.4231L11.3359 15.7496C10.2505 16.835 10.2505 17.848 11.3359 18.9092L12.6624 20.2598C12.8071 20.3805 12.8313 20.5251 12.8313 20.694V22.5753C12.8313 24.0707 13.5548 24.7701 15.0743 24.7701ZM19.3192 21.8517C18.9574 21.8517 18.6439 21.6829 18.3304 21.2969L16.1596 18.6439C15.9908 18.4509 15.8702 18.1856 15.8702 17.9203C15.8702 17.3656 16.2802 16.8832 16.9073 16.8832C17.245 16.8832 17.5103 17.0521 17.7998 17.3897L19.2951 19.271L22.7441 13.7477C22.937 13.4342 23.2506 13.193 23.6124 13.193C24.143 13.193 24.6495 13.5789 24.6495 14.1578C24.6495 14.4231 24.5048 14.7125 24.3842 14.9055L20.3322 21.2728C20.091 21.6829 19.7292 21.8517 19.3192 21.8517ZM0 44.1617C0 49.2025 2.48425 51.7111 7.47684 51.7111H33.0911C38.0837 51.7111 40.5679 49.2025 40.5679 44.1617V7.57331C40.5679 2.5566 38.0837 0 33.0911 0H7.47684C2.48425 0 0 2.5566 0 7.57331V44.1617ZM3.88314 44.0893V7.64568C3.88314 5.23379 5.16143 3.88314 7.66978 3.88314H32.8982C35.4065 3.88314 36.6848 5.23379 36.6848 7.64568V44.0893C36.6848 46.5012 35.4065 47.8277 32.8982 47.8277H7.66978C5.16143 47.8277 3.88314 46.5012 3.88314 44.0893Z" fill="#1E2EDE"/></svg></div>
+      <p class="body2"><span class="body2-bold">Clear decisions and next steps</span> across work, life, and everything in between.</p>
+    </div>
+  </div>
+
+  <div class="why-box">
+    <p class="body1-bold" style="margin-bottom:16px;">Why "Hoyll"?</p>
+    <p class="body1" style="max-width:1097px; margin:0 auto;">Inspired by the Welsh word "hwyl," it's a unique mix of energy, uplift, and togetherness you feel when you're doing something meaningful with other people.</p>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-outer" style="padding-top:80px;">
+  <div class="stats-wrap">
+    <div class="stats-bg">
+      <img src="bg-image-blue-v2.png" alt="">
+    </div>
+    <div class="stats-content">
+      <div>
+        <div class="h1" style="color:var(--white);">50%</div>
+        <p class="body1 stat-desc">Strong social relationships are linked to a 50% higher chance of living longer.</p>
+      </div>
+      <div>
+        <div class="h1" style="color:var(--white);">80+</div>
+        <p class="body1 stat-desc">An 80-year study found that good relationships best predict long-term happiness and health.</p>
+      </div>
+      <div>
+        <div class="h1" style="color:var(--white);">15</div>
+        <p class="body1 stat-desc">The Surgeon General warns that low social connection harms health like 15 cigarettes a day.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOR YOU IF -->
+<section class="for-you">
+  <h2 class="h2"><span>Hoyll is </span><span class="blue">for you if:</span></h2>
+  <div class="criteria-grid">
+    <div class="criteria-item body2">
+      <svg width="10" height="21" viewBox="0 0 10 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M-9.17939e-07 0L10 10.5L0 21" fill="#1E2EDE"/></svg>
+      You hold a lot and don't want to do it alone.
+    </div>
+    <div class="criteria-item body2">
+      <svg width="10" height="21" viewBox="0 0 10 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M-9.17939e-07 0L10 10.5L0 21" fill="#1E2EDE"/></svg>
+      You seek depth, not more contacts.
+    </div>
+    <div class="criteria-item body2">
+      <svg width="10" height="21" viewBox="0 0 10 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M-9.17939e-07 0L10 10.5L0 21" fill="#1E2EDE"/></svg>
+      You're tired of influencer noise and generic advice.
+    </div>
+    <div class="criteria-item body2">
+      <svg width="10" height="21" viewBox="0 0 10 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M-9.17939e-07 0L10 10.5L0 21" fill="#1E2EDE"/></svg>
+      You're thinking seriously about what's next.
+    </div>
+  </div>
+</section>
+
+<!-- HOYLL IS NOT -->
+<section class="not-section">
+  <h2 class="h2"><span>Hoyll is </span><span class="blue">not:</span></h2>
+  <div class="not-items">
+    <div class="not-item body2-bold">
+      <div class="x-icon">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="34.2426" y1="11.6393" x2="11.6393" y2="34.2426" stroke="#1E2EDE" stroke-width="4"/><line x1="33.567" y1="34.2428" x2="10.9637" y2="11.6396" stroke="#1E2EDE" stroke-width="4"/></svg>
+      </div>
+      For everyone
+    </div>
+    <div class="not-item body2-bold">
+      <div class="x-icon">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="34.2426" y1="11.6393" x2="11.6393" y2="34.2426" stroke="#1E2EDE" stroke-width="4"/><line x1="33.567" y1="34.2428" x2="10.9637" y2="11.6396" stroke="#1E2EDE" stroke-width="4"/></svg>
+      </div>
+      Therapy
+    </div>
+    <div class="not-item body2-bold">
+      <div class="x-icon">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="34.2426" y1="11.6393" x2="11.6393" y2="34.2426" stroke="#1E2EDE" stroke-width="4"/><line x1="33.567" y1="34.2428" x2="10.9637" y2="11.6396" stroke="#1E2EDE" stroke-width="4"/></svg>
+      </div>
+      Spiritual or performative
+    </div>
+    <div class="not-item body2-bold">
+      <div class="x-icon">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="34.2426" y1="11.6393" x2="11.6393" y2="34.2426" stroke="#1E2EDE" stroke-width="4"/><line x1="33.567" y1="34.2428" x2="10.9637" y2="11.6396" stroke="#1E2EDE" stroke-width="4"/></svg>
+      </div>
+      Unstructured
+    </div>
+    <div class="not-item body2-bold">
+      <div class="x-icon">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="34.2426" y1="11.6393" x2="11.6393" y2="34.2426" stroke="#1E2EDE" stroke-width="4"/><line x1="33.567" y1="34.2428" x2="10.9637" y2="11.6396" stroke="#1E2EDE" stroke-width="4"/></svg>
+      </div>
+      A place to pitch, sell, or network
+    </div>
+  </div>
+</section>
+
+<!-- CURATED, NOT CROWDED -->
+<section class="curated">
+  <div class="curated-header">
+    <span class="badge">What's Included</span>
+    <h2 class="h1" style="margin-top:32px;">Curated,<br><span class="blue">not crowded</span></h2>
+  </div>
+  <div class="curated-grid">
+    <div class="curated-photo">
+      <img src="curated-lifestyle.png" alt="">
+    </div>
+    <div class="feature-list">
+      <div class="feature-row">
+        <div class="feature-row-title body2-bold">
+          <svg width="22" height="18" viewBox="0 0 22 18" fill="none"><path d="M2 9l6 6L20 2" stroke="var(--mid-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Vetted community
+        </div>
+        <div class="feature-row-desc body2">Carefully vetted members aligned in values, life stage, and commitment—so you're with people like you.</div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-row-title body2-bold">
+          <svg width="22" height="18" viewBox="0 0 22 18" fill="none"><path d="M2 9l6 6L20 2" stroke="var(--mid-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Bi-weekly 90 minute sessions
+        </div>
+        <div class="feature-row-desc body2">Structured feedback and accountability with peers you respect—and genuinely enjoy supporting.</div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-row-title body2-bold">
+          <svg width="22" height="18" viewBox="0 0 22 18" fill="none"><path d="M2 9l6 6L20 2" stroke="var(--mid-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Members-only
+        </div>
+        <div class="feature-row-desc body2">A private space to celebrate wins, ask questions, share resources, and stay connected between sessions.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="outcomes">
+    <div class="outcome-item"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.1287 45.8454H17.073C17.5536 45.8454 17.897 45.9828 18.2403 46.3261L21.7654 49.8284C24.6495 52.7353 27.3276 52.7124 30.2117 49.8284L33.7368 46.3261C34.0801 45.9828 34.4234 45.8454 34.9041 45.8454H39.8483C43.9456 45.8454 45.8454 43.9685 45.8454 39.8483V34.9041C45.8454 34.4234 45.9828 34.103 46.3261 33.7368L49.8054 30.2117C52.7124 27.3276 52.6894 24.6724 49.8054 21.7654L46.3261 18.2403C45.9828 17.897 45.8454 17.5536 45.8454 17.0958V12.1287C45.8454 8.05436 43.9685 6.13164 39.8483 6.13164H34.9041C34.4234 6.13164 34.0801 6.01717 33.7368 5.67383L30.2117 2.17168C27.3276 -0.735328 24.6495 -0.712438 21.7654 2.17168L18.2403 5.67383C17.897 6.01717 17.5536 6.13164 17.073 6.13164H12.1287C8.03148 6.13164 6.13164 8.00861 6.13164 12.1287V17.0958C6.13164 17.5536 6.01717 17.897 5.67383 18.2403L2.17168 21.7654C-0.735328 24.6724 -0.712438 27.3276 2.17168 30.2117L5.67383 33.7368C6.01717 34.103 6.13164 34.4234 6.13164 34.9041V39.8483C6.13164 43.9456 8.03148 45.8454 12.1287 45.8454ZM12.1287 42.206C10.0916 42.206 9.77109 41.8855 9.77109 39.8483V33.691C9.77109 33.0043 9.56511 32.4778 9.06154 31.9742L4.73532 27.6709C3.29328 26.206 3.29328 25.794 4.73532 24.329L9.06154 20.0257C9.56511 19.5222 9.77109 18.9957 9.77109 18.2861V12.1287C9.77109 10.0687 10.0687 9.77109 12.1287 9.77109H18.2861C18.9957 9.77109 19.5222 9.58798 20.0257 9.06154L24.329 4.73532C25.794 3.29328 26.206 3.29328 27.6481 4.73532L31.9742 9.06154C32.4549 9.58798 33.0043 9.77109 33.691 9.77109H39.8483C41.8855 9.77109 42.206 10.0916 42.206 12.1287V18.2861C42.206 18.9957 42.4349 19.5222 42.9385 20.0257L47.2646 24.329C48.7066 25.794 48.7066 26.206 47.2646 27.6709L42.9385 31.9742C42.4349 32.4778 42.206 33.0043 42.206 33.691V39.8483C42.206 41.8855 41.8855 42.206 39.8483 42.206H33.691C33.0043 42.206 32.4549 42.412 31.9742 42.9385L27.6481 47.2646C26.206 48.7066 25.794 48.7066 24.329 47.2646L20.0257 42.9385C19.5222 42.412 18.9957 42.206 18.2861 42.206H12.1287Z" fill="#1E2EDE" fill-opacity="0.85"/><path d="M23.5045 36.8497C24.2598 36.8497 24.9008 36.4834 25.3586 35.7968L35.8192 19.3161C36.071 18.8812 36.3686 18.3776 36.3686 17.8512C36.3686 16.844 35.453 16.1802 34.5145 16.1802C33.9194 16.1802 33.3471 16.5235 32.9122 17.2102L23.4129 32.4548L18.9036 26.6179C18.3543 25.8854 17.8507 25.6795 17.2327 25.6795C16.2255 25.6795 15.4473 26.4806 15.4473 27.5106C15.4473 27.9913 15.6533 28.4949 15.9737 28.9298L21.5588 35.7968C22.1311 36.5521 22.7491 36.8497 23.5045 36.8497Z" fill="#1E2EDE" fill-opacity="0.85"/></svg><span class="body2-bold">Meaningful relationships</span></div>
+    <div class="outcome-item"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.1287 45.8454H17.073C17.5536 45.8454 17.897 45.9828 18.2403 46.3261L21.7654 49.8284C24.6495 52.7353 27.3276 52.7124 30.2117 49.8284L33.7368 46.3261C34.0801 45.9828 34.4234 45.8454 34.9041 45.8454H39.8483C43.9456 45.8454 45.8454 43.9685 45.8454 39.8483V34.9041C45.8454 34.4234 45.9828 34.103 46.3261 33.7368L49.8054 30.2117C52.7124 27.3276 52.6894 24.6724 49.8054 21.7654L46.3261 18.2403C45.9828 17.897 45.8454 17.5536 45.8454 17.0958V12.1287C45.8454 8.05436 43.9685 6.13164 39.8483 6.13164H34.9041C34.4234 6.13164 34.0801 6.01717 33.7368 5.67383L30.2117 2.17168C27.3276 -0.735328 24.6495 -0.712438 21.7654 2.17168L18.2403 5.67383C17.897 6.01717 17.5536 6.13164 17.073 6.13164H12.1287C8.03148 6.13164 6.13164 8.00861 6.13164 12.1287V17.0958C6.13164 17.5536 6.01717 17.897 5.67383 18.2403L2.17168 21.7654C-0.735328 24.6724 -0.712438 27.3276 2.17168 30.2117L5.67383 33.7368C6.01717 34.103 6.13164 34.4234 6.13164 34.9041V39.8483C6.13164 43.9456 8.03148 45.8454 12.1287 45.8454ZM12.1287 42.206C10.0916 42.206 9.77109 41.8855 9.77109 39.8483V33.691C9.77109 33.0043 9.56511 32.4778 9.06154 31.9742L4.73532 27.6709C3.29328 26.206 3.29328 25.794 4.73532 24.329L9.06154 20.0257C9.56511 19.5222 9.77109 18.9957 9.77109 18.2861V12.1287C9.77109 10.0687 10.0687 9.77109 12.1287 9.77109H18.2861C18.9957 9.77109 19.5222 9.58798 20.0257 9.06154L24.329 4.73532C25.794 3.29328 26.206 3.29328 27.6481 4.73532L31.9742 9.06154C32.4549 9.58798 33.0043 9.77109 33.691 9.77109H39.8483C41.8855 9.77109 42.206 10.0916 42.206 12.1287V18.2861C42.206 18.9957 42.4349 19.5222 42.9385 20.0257L47.2646 24.329C48.7066 25.794 48.7066 26.206 47.2646 27.6709L42.9385 31.9742C42.4349 32.4778 42.206 33.0043 42.206 33.691V39.8483C42.206 41.8855 41.8855 42.206 39.8483 42.206H33.691C33.0043 42.206 32.4549 42.412 31.9742 42.9385L27.6481 47.2646C26.206 48.7066 25.794 48.7066 24.329 47.2646L20.0257 42.9385C19.5222 42.412 18.9957 42.206 18.2861 42.206H12.1287Z" fill="#1E2EDE" fill-opacity="0.85"/><path d="M23.5045 36.8497C24.2598 36.8497 24.9008 36.4834 25.3586 35.7968L35.8192 19.3161C36.071 18.8812 36.3686 18.3776 36.3686 17.8512C36.3686 16.844 35.453 16.1802 34.5145 16.1802C33.9194 16.1802 33.3471 16.5235 32.9122 17.2102L23.4129 32.4548L18.9036 26.6179C18.3543 25.8854 17.8507 25.6795 17.2327 25.6795C16.2255 25.6795 15.4473 26.4806 15.4473 27.5106C15.4473 27.9913 15.6533 28.4949 15.9737 28.9298L21.5588 35.7968C22.1311 36.5521 22.7491 36.8497 23.5045 36.8497Z" fill="#1E2EDE" fill-opacity="0.85"/></svg><span class="body2-bold">Better decisions</span></div>
+    <div class="outcome-item"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.1287 45.8454H17.073C17.5536 45.8454 17.897 45.9828 18.2403 46.3261L21.7654 49.8284C24.6495 52.7353 27.3276 52.7124 30.2117 49.8284L33.7368 46.3261C34.0801 45.9828 34.4234 45.8454 34.9041 45.8454H39.8483C43.9456 45.8454 45.8454 43.9685 45.8454 39.8483V34.9041C45.8454 34.4234 45.9828 34.103 46.3261 33.7368L49.8054 30.2117C52.7124 27.3276 52.6894 24.6724 49.8054 21.7654L46.3261 18.2403C45.9828 17.897 45.8454 17.5536 45.8454 17.0958V12.1287C45.8454 8.05436 43.9685 6.13164 39.8483 6.13164H34.9041C34.4234 6.13164 34.0801 6.01717 33.7368 5.67383L30.2117 2.17168C27.3276 -0.735328 24.6495 -0.712438 21.7654 2.17168L18.2403 5.67383C17.897 6.01717 17.5536 6.13164 17.073 6.13164H12.1287C8.03148 6.13164 6.13164 8.00861 6.13164 12.1287V17.0958C6.13164 17.5536 6.01717 17.897 5.67383 18.2403L2.17168 21.7654C-0.735328 24.6724 -0.712438 27.3276 2.17168 30.2117L5.67383 33.7368C6.01717 34.103 6.13164 34.4234 6.13164 34.9041V39.8483C6.13164 43.9456 8.03148 45.8454 12.1287 45.8454ZM12.1287 42.206C10.0916 42.206 9.77109 41.8855 9.77109 39.8483V33.691C9.77109 33.0043 9.56511 32.4778 9.06154 31.9742L4.73532 27.6709C3.29328 26.206 3.29328 25.794 4.73532 24.329L9.06154 20.0257C9.56511 19.5222 9.77109 18.9957 9.77109 18.2861V12.1287C9.77109 10.0687 10.0687 9.77109 12.1287 9.77109H18.2861C18.9957 9.77109 19.5222 9.58798 20.0257 9.06154L24.329 4.73532C25.794 3.29328 26.206 3.29328 27.6481 4.73532L31.9742 9.06154C32.4549 9.58798 33.0043 9.77109 33.691 9.77109H39.8483C41.8855 9.77109 42.206 10.0916 42.206 12.1287V18.2861C42.206 18.9957 42.4349 19.5222 42.9385 20.0257L47.2646 24.329C48.7066 25.794 48.7066 26.206 47.2646 27.6709L42.9385 31.9742C42.4349 32.4778 42.206 33.0043 42.206 33.691V39.8483C42.206 41.8855 41.8855 42.206 39.8483 42.206H33.691C33.0043 42.206 32.4549 42.412 31.9742 42.9385L27.6481 47.2646C26.206 48.7066 25.794 48.7066 24.329 47.2646L20.0257 42.9385C19.5222 42.412 18.9957 42.206 18.2861 42.206H12.1287Z" fill="#1E2EDE" fill-opacity="0.85"/><path d="M23.5045 36.8497C24.2598 36.8497 24.9008 36.4834 25.3586 35.7968L35.8192 19.3161C36.071 18.8812 36.3686 18.3776 36.3686 17.8512C36.3686 16.844 35.453 16.1802 34.5145 16.1802C33.9194 16.1802 33.3471 16.5235 32.9122 17.2102L23.4129 32.4548L18.9036 26.6179C18.3543 25.8854 17.8507 25.6795 17.2327 25.6795C16.2255 25.6795 15.4473 26.4806 15.4473 27.5106C15.4473 27.9913 15.6533 28.4949 15.9737 28.9298L21.5588 35.7968C22.1311 36.5521 22.7491 36.8497 23.5045 36.8497Z" fill="#1E2EDE" fill-opacity="0.85"/></svg><span class="body2-bold">Accountability and results</span></div>
+    <div class="outcome-item"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.1287 45.8454H17.073C17.5536 45.8454 17.897 45.9828 18.2403 46.3261L21.7654 49.8284C24.6495 52.7353 27.3276 52.7124 30.2117 49.8284L33.7368 46.3261C34.0801 45.9828 34.4234 45.8454 34.9041 45.8454H39.8483C43.9456 45.8454 45.8454 43.9685 45.8454 39.8483V34.9041C45.8454 34.4234 45.9828 34.103 46.3261 33.7368L49.8054 30.2117C52.7124 27.3276 52.6894 24.6724 49.8054 21.7654L46.3261 18.2403C45.9828 17.897 45.8454 17.5536 45.8454 17.0958V12.1287C45.8454 8.05436 43.9685 6.13164 39.8483 6.13164H34.9041C34.4234 6.13164 34.0801 6.01717 33.7368 5.67383L30.2117 2.17168C27.3276 -0.735328 24.6495 -0.712438 21.7654 2.17168L18.2403 5.67383C17.897 6.01717 17.5536 6.13164 17.073 6.13164H12.1287C8.03148 6.13164 6.13164 8.00861 6.13164 12.1287V17.0958C6.13164 17.5536 6.01717 17.897 5.67383 18.2403L2.17168 21.7654C-0.735328 24.6724 -0.712438 27.3276 2.17168 30.2117L5.67383 33.7368C6.01717 34.103 6.13164 34.4234 6.13164 34.9041V39.8483C6.13164 43.9456 8.03148 45.8454 12.1287 45.8454ZM12.1287 42.206C10.0916 42.206 9.77109 41.8855 9.77109 39.8483V33.691C9.77109 33.0043 9.56511 32.4778 9.06154 31.9742L4.73532 27.6709C3.29328 26.206 3.29328 25.794 4.73532 24.329L9.06154 20.0257C9.56511 19.5222 9.77109 18.9957 9.77109 18.2861V12.1287C9.77109 10.0687 10.0687 9.77109 12.1287 9.77109H18.2861C18.9957 9.77109 19.5222 9.58798 20.0257 9.06154L24.329 4.73532C25.794 3.29328 26.206 3.29328 27.6481 4.73532L31.9742 9.06154C32.4549 9.58798 33.0043 9.77109 33.691 9.77109H39.8483C41.8855 9.77109 42.206 10.0916 42.206 12.1287V18.2861C42.206 18.9957 42.4349 19.5222 42.9385 20.0257L47.2646 24.329C48.7066 25.794 48.7066 26.206 47.2646 27.6709L42.9385 31.9742C42.4349 32.4778 42.206 33.0043 42.206 33.691V39.8483C42.206 41.8855 41.8855 42.206 39.8483 42.206H33.691C33.0043 42.206 32.4549 42.412 31.9742 42.9385L27.6481 47.2646C26.206 48.7066 25.794 48.7066 24.329 47.2646L20.0257 42.9385C19.5222 42.412 18.9957 42.206 18.2861 42.206H12.1287Z" fill="#1E2EDE" fill-opacity="0.85"/><path d="M23.5045 36.8497C24.2598 36.8497 24.9008 36.4834 25.3586 35.7968L35.8192 19.3161C36.071 18.8812 36.3686 18.3776 36.3686 17.8512C36.3686 16.844 35.453 16.1802 34.5145 16.1802C33.9194 16.1802 33.3471 16.5235 32.9122 17.2102L23.4129 32.4548L18.9036 26.6179C18.3543 25.8854 17.8507 25.6795 17.2327 25.6795C16.2255 25.6795 15.4473 26.4806 15.4473 27.5106C15.4473 27.9913 15.6533 28.4949 15.9737 28.9298L21.5588 35.7968C22.1311 36.5521 22.7491 36.8497 23.5045 36.8497Z" fill="#1E2EDE" fill-opacity="0.85"/></svg><span class="body2-bold">Capacity and resilience</span></div>
+  </div>
+</section>
+
+<!-- GETTING STARTED -->
+<section class="getting-started">
+  <h2 class="h1">Getting started<br><span class="blue">is easy</span></h2>
+  <div class="steps">
+    <div class="step">
+      <div class="h2 blue">01 — Apply</div>
+      <div class="body2">A short application to understand your goals, pace, and fit. No pitches, just clarity.</div>
+    </div>
+    <div class="step">
+      <div class="h2 blue">02 — Match</div>
+      <div class="body2">We don't "dump you into a community." We place every member into a curated Hoyll based on life stage, goals, pace, and personality fit.</div>
+    </div>
+    <div class="step">
+      <div class="h2 blue">03 — Meet</div>
+      <div class="body2">Meet bi-weekly for 90 minutes with the same people, same time, same day.</div>
+    </div>
+    <div class="step">
+      <div class="h2 blue">04 — Move</div>
+      <div class="body2">Turn insight into action. Decide next steps and get real follow-through from the group.</div>
+    </div>
+  </div>
+  <div style="margin-top:52px;">
+    <a href="#pricing" class="btn-blue">Find Your Hoyll</a>
+  </div>
+</section>
+
+<!-- DEPTH, DISCRETION -->
+<section class="depth">
+  <h2 class="h1">Depth, discretion<br><span class="blue">&amp; follow-through</span></h2>
+  <p class="body1" style="margin-top:32px;">Hoyll is curated, consistent, and confidential.</p>
+  <div class="depth-photos">
+    <div class="depth-photo">
+      <img src="depth-1.png" alt="">
+      <div class="depth-caption body2-bold">You crave depth, not more meaningless contacts.</div>
+    </div>
+    <div class="depth-photo">
+      <img src="depth-2.png" alt="">
+      <div class="depth-caption body2-bold">You're tired of influencer noise and generic advice.</div>
+    </div>
+    <div class="depth-photo">
+      <img src="people-cafe.png" alt="">
+      <div class="depth-caption body2-bold">You hold a lot and don't want to do it alone.</div>
+    </div>
+    <div class="depth-photo">
+      <img src="hand-shaking.png" alt="">
+      <div class="depth-caption body2-bold">You're thinking seriously about what's next.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <h2 class="h1 blue">Join Hoyll</h2>
+  <p class="body1" style="margin-top:28px;">90 day money-back guarantee</p>
+  <div class="pricing-cards">
+    <div class="pricing-card light">
+      <p class="body1-bold">Hoyll</p>
+      <div class="body2" style="margin-top:24px;">
+        <p>For busy professionals in high-responsibility executive roles who want to turn consistent, high-trust connection into better performance, clearer thinking, and greater personal and professional satisfaction.</p>
+        <br>
+        <p>• Vetted, premium member community</p>
+        <p>• 90-minute bi-weekly facilitated peer roundtables</p>
+        <p>• Clearer decisions, next steps, and accountability</p>
+      </div>
+      <div class="plan-price">$295 <span class="plan-per">/ month</span></div>
+      <div class="pricing-card-cta"><a href="#" class="btn-blue">Get Started</a></div>
+    </div>
+    <div class="pricing-card dark">
+      <p class="body1-bold" style="color:var(--light-blue);">Hoyll+</p>
+      <div class="body2" style="margin-top:24px; color:var(--light-blue);">
+        <p>For busy professionals in high-responsibility executive roles who want everything in Hoyll, plus more personalized coaching and accountability between group sessions.</p>
+        <br>
+        <p>• Everything in Hoyll</p>
+        <p>• Private 1:1 coaching every other week</p>
+        <p>• Added clarity, accountability, and follow-through</p>
+      </div>
+      <div class="plan-price" style="color:var(--light-blue);">$895 <span class="plan-per" style="color:var(--light-blue);">/ month</span></div>
+      <div class="pricing-card-cta"><a href="#" class="btn-blue">Get Started</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO WE ARE -->
+<section class="who">
+  <span class="badge">Who We Are</span>
+  <p class="h3" style="max-width:1068px; margin:40px auto 0;">We didn't start Hoyll to teach frameworks or sell advice. We started it because the most meaningful progress we saw came from having the right people in the room and going deep with them.</p>
+
+  <div class="founders">
+    <div class="founder">
+      <div class="founder-photo">
+        <img src="founder-dave.png" alt="Dave Colina">
+      </div>
+      <p class="body2-bold">Dave Colina</p>
+      <p class="body2 founder-role">3x Founder &amp; CEO | Inc. 5000 Awardee | Community Builder</p>
+    </div>
+    <div class="founder">
+      <div class="founder-photo">
+        <img src="founder-markus.png" alt="Markus Karjalainen">
+      </div>
+      <p class="body2-bold">Markus Karjalainen</p>
+      <p class="body2 founder-role">3x Founder &amp; CMO | Community Builder | Avid Cyclist</p>
+    </div>
+  </div>
+
+  <p class="body2-bold founder-quote">We were built in high-pressure environments. Now we're building the support we wished we had.</p>
+</section>
+
+<!-- BETWEEN US -->
+<section class="between-us">
+  <h2 class="h2">Between us, we bring:</h2>
+  <div class="credentials-grid">
+    <div class="cred-item body2"><div class="cred-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.1287 45.8454H17.073C17.5536 45.8454 17.897 45.9828 18.2403 46.3261L21.7654 49.8284C24.6495 52.7353 27.3276 52.7124 30.2117 49.8284L33.7368 46.3261C34.0801 45.9828 34.4234 45.8454 34.9041 45.8454H39.8483C43.9456 45.8454 45.8454 43.9685 45.8454 39.8483V34.9041C45.8454 34.4234 45.9828 34.103 46.3261 33.7368L49.8054 30.2117C52.7124 27.3276 52.6894 24.6724 49.8054 21.7654L46.3261 18.2403C45.9828 17.897 45.8454 17.5536 45.8454 17.0958V12.1287C45.8454 8.05436 43.9685 6.13164 39.8483 6.13164H34.9041C34.4234 6.13164 34.0801 6.01717 33.7368 5.67383L30.2117 2.17168C27.3276 -0.735328 24.6495 -0.712438 21.7654 2.17168L18.2403 5.67383C17.897 6.01717 17.5536 6.13164 17.073 6.13164H12.1287C8.03148 6.13164 6.13164 8.00861 6.13164 12.1287V17.0958C6.13164 17.5536 6.01717 17.897 5.67383 18.2403L2.17168 21.7654C-0.735328 24.6724 -0.712438 27.3276 2.17168 30.2117L5.67383 33.7368C6.01717 34.103 6.13164 34.4234 6.13164 34.9041V39.8483C6.13164 43.9456 8.03148 45.8454 12.1287 45.8454ZM12.1287 42.206C10.0916 42.206 9.77109 41.8855 9.77109 39.8483V33.691C9.77109 33.0043 9.56511 32.4778 9.06154 31.9742L4.73532 27.6709C3.29328 26.206 3.29328 25.794 4.73532 24.329L9.06154 20.0257C9.56511 19.5222 9.77109 18.9957 9.77109 18.2861V12.1287C9.77109 10.0687 10.0687 9.77109 12.1287 9.77109H18.2861C18.9957 9.77109 19.5222 9.58798 20.0257 9.06154L24.329 4.73532C25.794 3.29328 26.206 3.29328 27.6481 4.73532L31.9742 9.06154C32.4549 9.58798 33.0043 9.77109 33.691 9.77109H39.8483C41.8855 9.77109 42.206 10.0916 42.206 12.1287V18.2861C42.206 18.9957 42.4349 19.5222 42.9385 20.0257L47.2646 24.329C48.7066 25.794 48.7066 26.206 47.2646 27.6709L42.9385 31.9742C42.4349 32.4778 42.206 33.0043 42.206 33.691V39.8483C42.206 41.8855 41.8855 42.206 39.8483 42.206H33.691C33.0043 42.206 32.4549 42.412 31.9742 42.9385L27.6481 47.2646C26.206 48.7066 25.794 48.7066 24.329 47.2646L20.0257 42.9385C19.5222 42.412 18.9957 42.206 18.2861 42.206H12.1287Z" fill="#1E2EDE" fill-opacity="0.85"/><path d="M23.5045 36.8497C24.2598 36.8497 24.9008 36.4834 25.3586 35.7968L35.8192 19.3161C36.071 18.8812 36.3686 18.3776 36.3686 17.8512C36.3686 16.844 35.453 16.1802 34.5145 16.1802C33.9194 16.1802 33.3471 16.5235 32.9122 17.2102L23.4129 32.4548L18.9036 26.6179C18.3543 25.8854 17.8507 25.6795 17.2327 25.6795C16.2255 25.6795 15.4473 26.4806 15.4473 27.5106C15.4473 27.9913 15.6533 28.4949 15.9737 28.9298L21.5588 35.7968C22.1311 36.5521 22.7491 36.8497 23.5045 36.8497Z" fill="#1E2EDE" fill-opacity="0.85"/></svg></div>Over two decades of building, leading and operating teams within consumer brands</div>
+    <div class="cred-item body2"><div class="cred-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.1287 45.8454H17.073C17.5536 45.8454 17.897 45.9828 18.2403 46.3261L21.7654 49.8284C24.6495 52.7353 27.3276 52.7124 30.2117 49.8284L33.7368 46.3261C34.0801 45.9828 34.4234 45.8454 34.9041 45.8454H39.8483C43.9456 45.8454 45.8454 43.9685 45.8454 39.8483V34.9041C45.8454 34.4234 45.9828 34.103 46.3261 33.7368L49.8054 30.2117C52.7124 27.3276 52.6894 24.6724 49.8054 21.7654L46.3261 18.2403C45.9828 17.897 45.8454 17.5536 45.8454 17.0958V12.1287C45.8454 8.05436 43.9685 6.13164 39.8483 6.13164H34.9041C34.4234 6.13164 34.0801 6.01717 33.7368 5.67383L30.2117 2.17168C27.3276 -0.735328 24.6495 -0.712438 21.7654 2.17168L18.2403 5.67383C17.897 6.01717 17.5536 6.13164 17.073 6.13164H12.1287C8.03148 6.13164 6.13164 8.00861 6.13164 12.1287V17.0958C6.13164 17.5536 6.01717 17.897 5.67383 18.2403L2.17168 21.7654C-0.735328 24.6724 -0.712438 27.3276 2.17168 30.2117L5.67383 33.7368C6.01717 34.103 6.13164 34.4234 6.13164 34.9041V39.8483C6.13164 43.9456 8.03148 45.8454 12.1287 45.8454ZM12.1287 42.206C10.0916 42.206 9.77109 41.8855 9.77109 39.8483V33.691C9.77109 33.0043 9.56511 32.4778 9.06154 31.9742L4.73532 27.6709C3.29328 26.206 3.29328 25.794 4.73532 24.329L9.06154 20.0257C9.56511 19.5222 9.77109 18.9957 9.77109 18.2861V12.1287C9.77109 10.0687 10.0687 9.77109 12.1287 9.77109H18.2861C18.9957 9.77109 19.5222 9.58798 20.0257 9.06154L24.329 4.73532C25.794 3.29328 26.206 3.29328 27.6481 4.73532L31.9742 9.06154C32.4549 9.58798 33.0043 9.77109 33.691 9.77109H39.8483C41.8855 9.77109 42.206 10.0916 42.206 12.1287V18.2861C42.206 18.9957 42.4349 19.5222 42.9385 20.0257L47.2646 24.329C48.7066 25.794 48.7066 26.206 47.2646 27.6709L42.9385 31.9742C42.4349 32.4778 42.206 33.0043 42.206 33.691V39.8483C42.206 41.8855 41.8855 42.206 39.8483 42.206H33.691C33.0043 42.206 32.4549 42.412 31.9742 42.9385L27.6481 47.2646C26.206 48.7066 25.794 48.7066 24.329 47.2646L20.0257 42.9385C19.5222 42.412 18.9957 42.206 18.2861 42.206H12.1287Z" fill="#1E2EDE" fill-opacity="0.85"/><path d="M23.5045 36.8497C24.2598 36.8497 24.9008 36.4834 25.3586 35.7968L35.8192 19.3161C36.071 18.8812 36.3686 18.3776 36.3686 17.8512C36.3686 16.844 35.453 16.1802 34.5145 16.1802C33.9194 16.1802 33.3471 16.5235 32.9122 17.2102L23.4129 32.4548L18.9036 26.6179C18.3543 25.8854 17.8507 25.6795 17.2327 25.6795C16.2255 25.6795 15.4473 26.4806 15.4473 27.5106C15.4473 27.9913 15.6533 28.4949 15.9737 28.9298L21.5588 35.7968C22.1311 36.5521 22.7491 36.8497 23.5045 36.8497Z" fill="#1E2EDE" fill-opacity="0.85"/></svg></div>Two years running small, intimate coaching groups for founders</div>
+    <div class="cred-item body2 last"><div class="cred-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.1287 45.8454H17.073C17.5536 45.8454 17.897 45.9828 18.2403 46.3261L21.7654 49.8284C24.6495 52.7353 27.3276 52.7124 30.2117 49.8284L33.7368 46.3261C34.0801 45.9828 34.4234 45.8454 34.9041 45.8454H39.8483C43.9456 45.8454 45.8454 43.9685 45.8454 39.8483V34.9041C45.8454 34.4234 45.9828 34.103 46.3261 33.7368L49.8054 30.2117C52.7124 27.3276 52.6894 24.6724 49.8054 21.7654L46.3261 18.2403C45.9828 17.897 45.8454 17.5536 45.8454 17.0958V12.1287C45.8454 8.05436 43.9685 6.13164 39.8483 6.13164H34.9041C34.4234 6.13164 34.0801 6.01717 33.7368 5.67383L30.2117 2.17168C27.3276 -0.735328 24.6495 -0.712438 21.7654 2.17168L18.2403 5.67383C17.897 6.01717 17.5536 6.13164 17.073 6.13164H12.1287C8.03148 6.13164 6.13164 8.00861 6.13164 12.1287V17.0958C6.13164 17.5536 6.01717 17.897 5.67383 18.2403L2.17168 21.7654C-0.735328 24.6724 -0.712438 27.3276 2.17168 30.2117L5.67383 33.7368C6.01717 34.103 6.13164 34.4234 6.13164 34.9041V39.8483C6.13164 43.9456 8.03148 45.8454 12.1287 45.8454ZM12.1287 42.206C10.0916 42.206 9.77109 41.8855 9.77109 39.8483V33.691C9.77109 33.0043 9.56511 32.4778 9.06154 31.9742L4.73532 27.6709C3.29328 26.206 3.29328 25.794 4.73532 24.329L9.06154 20.0257C9.56511 19.5222 9.77109 18.9957 9.77109 18.2861V12.1287C9.77109 10.0687 10.0687 9.77109 12.1287 9.77109H18.2861C18.9957 9.77109 19.5222 9.58798 20.0257 9.06154L24.329 4.73532C25.794 3.29328 26.206 3.29328 27.6481 4.73532L31.9742 9.06154C32.4549 9.58798 33.0043 9.77109 33.691 9.77109H39.8483C41.8855 9.77109 42.206 10.0916 42.206 12.1287V18.2861C42.206 18.9957 42.4349 19.5222 42.9385 20.0257L47.2646 24.329C48.7066 25.794 48.7066 26.206 47.2646 27.6709L42.9385 31.9742C42.4349 32.4778 42.206 33.0043 42.206 33.691V39.8483C42.206 41.8855 41.8855 42.206 39.8483 42.206H33.691C33.0043 42.206 32.4549 42.412 31.9742 42.9385L27.6481 47.2646C26.206 48.7066 25.794 48.7066 24.329 47.2646L20.0257 42.9385C19.5222 42.412 18.9957 42.206 18.2861 42.206H12.1287Z" fill="#1E2EDE" fill-opacity="0.85"/><path d="M23.5045 36.8497C24.2598 36.8497 24.9008 36.4834 25.3586 35.7968L35.8192 19.3161C36.071 18.8812 36.3686 18.3776 36.3686 17.8512C36.3686 16.844 35.453 16.1802 34.5145 16.1802C33.9194 16.1802 33.3471 16.5235 32.9122 17.2102L23.4129 32.4548L18.9036 26.6179C18.3543 25.8854 17.8507 25.6795 17.2327 25.6795C16.2255 25.6795 15.4473 26.4806 15.4473 27.5106C15.4473 27.9913 15.6533 28.4949 15.9737 28.9298L21.5588 35.7968C22.1311 36.5521 22.7491 36.8497 23.5045 36.8497Z" fill="#1E2EDE" fill-opacity="0.85"/></svg></div>Facilitated conversations focused on clarity, accountability, and follow-through</div>
+    <div class="cred-item body2 last"><div class="cred-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.1287 45.8454H17.073C17.5536 45.8454 17.897 45.9828 18.2403 46.3261L21.7654 49.8284C24.6495 52.7353 27.3276 52.7124 30.2117 49.8284L33.7368 46.3261C34.0801 45.9828 34.4234 45.8454 34.9041 45.8454H39.8483C43.9456 45.8454 45.8454 43.9685 45.8454 39.8483V34.9041C45.8454 34.4234 45.9828 34.103 46.3261 33.7368L49.8054 30.2117C52.7124 27.3276 52.6894 24.6724 49.8054 21.7654L46.3261 18.2403C45.9828 17.897 45.8454 17.5536 45.8454 17.0958V12.1287C45.8454 8.05436 43.9685 6.13164 39.8483 6.13164H34.9041C34.4234 6.13164 34.0801 6.01717 33.7368 5.67383L30.2117 2.17168C27.3276 -0.735328 24.6495 -0.712438 21.7654 2.17168L18.2403 5.67383C17.897 6.01717 17.5536 6.13164 17.073 6.13164H12.1287C8.03148 6.13164 6.13164 8.00861 6.13164 12.1287V17.0958C6.13164 17.5536 6.01717 17.897 5.67383 18.2403L2.17168 21.7654C-0.735328 24.6724 -0.712438 27.3276 2.17168 30.2117L5.67383 33.7368C6.01717 34.103 6.13164 34.4234 6.13164 34.9041V39.8483C6.13164 43.9456 8.03148 45.8454 12.1287 45.8454ZM12.1287 42.206C10.0916 42.206 9.77109 41.8855 9.77109 39.8483V33.691C9.77109 33.0043 9.56511 32.4778 9.06154 31.9742L4.73532 27.6709C3.29328 26.206 3.29328 25.794 4.73532 24.329L9.06154 20.0257C9.56511 19.5222 9.77109 18.9957 9.77109 18.2861V12.1287C9.77109 10.0687 10.0687 9.77109 12.1287 9.77109H18.2861C18.9957 9.77109 19.5222 9.58798 20.0257 9.06154L24.329 4.73532C25.794 3.29328 26.206 3.29328 27.6481 4.73532L31.9742 9.06154C32.4549 9.58798 33.0043 9.77109 33.691 9.77109H39.8483C41.8855 9.77109 42.206 10.0916 42.206 12.1287V18.2861C42.206 18.9957 42.4349 19.5222 42.9385 20.0257L47.2646 24.329C48.7066 25.794 48.7066 26.206 47.2646 27.6709L42.9385 31.9742C42.4349 32.4778 42.206 33.0043 42.206 33.691V39.8483C42.206 41.8855 41.8855 42.206 39.8483 42.206H33.691C33.0043 42.206 32.4549 42.412 31.9742 42.9385L27.6481 47.2646C26.206 48.7066 25.794 48.7066 24.329 47.2646L20.0257 42.9385C19.5222 42.412 18.9957 42.206 18.2861 42.206H12.1287Z" fill="#1E2EDE" fill-opacity="0.85"/><path d="M23.5045 36.8497C24.2598 36.8497 24.9008 36.4834 25.3586 35.7968L35.8192 19.3161C36.071 18.8812 36.3686 18.3776 36.3686 17.8512C36.3686 16.844 35.453 16.1802 34.5145 16.1802C33.9194 16.1802 33.3471 16.5235 32.9122 17.2102L23.4129 32.4548L18.9036 26.6179C18.3543 25.8854 17.8507 25.6795 17.2327 25.6795C16.2255 25.6795 15.4473 26.4806 15.4473 27.5106C15.4473 27.9913 15.6533 28.4949 15.9737 28.9298L21.5588 35.7968C22.1311 36.5521 22.7491 36.8497 23.5045 36.8497Z" fill="#1E2EDE" fill-opacity="0.85"/></svg></div>An understanding of how isolating high performance can be</div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <h2 class="h1" style="text-align:center; margin-bottom:60px;">F.A.Q.</h2>
+  <div class="faq-list">
+    <div class="faq-item open">
+      <button class="faq-btn">
+        How is HOYLL actually different from other peer groups?
+        <svg class="faq-chevron" width="26" height="14" viewBox="0 0 26 14" fill="none"><path d="M2 2l11 10L24 2" stroke="var(--dark-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-inner body2">Most peer groups are either too tactical (all business, no life), too vague (just "community"), or too inconsistent to create real trust. Hoyll is built around one core idea: consistent, high-trust connection is a performance lever.<br><br>Each group is professionally facilitated, meets on a reliable cadence, and follows a simple structure (CORE check-in, rotations, commitments) so conversations actually lead to clarity, action, and stronger relationships over time.</div>
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        Who's leading the groups?
+        <svg class="faq-chevron" width="26" height="14" viewBox="0 0 26 14" fill="none"><path d="M2 2l11 10L24 2" stroke="var(--dark-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-inner body2">Every Hoyll is led by a trained facilitator who keeps the conversation focused, balanced, and useful. Their job is not to lecture or play guru. Their job is to create the conditions for a great room: trust, structure, depth, and accountability.<br><br>They help each member get heard, keep the group on track, and make sure sessions lead to clear next steps, not just good conversation.</div>
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        How do you decide who I'm grouped with?
+        <svg class="faq-chevron" width="26" height="14" viewBox="0 0 26 14" fill="none"><path d="M2 2l11 10L24 2" stroke="var(--dark-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-inner body2">We don't just drop you into a big community and hope for the best. We curate each Hoyll based on several factors like life stage, goals, pace, personality fit, and what kind of support you want right now.<br><br>The goal is simple: put you in a room with people you'll genuinely click with and respect, so trust builds quickly and the conversations are immediately useful.</div>
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        What happens if my group isn't the right fit?
+        <svg class="faq-chevron" width="26" height="14" viewBox="0 0 26 14" fill="none"><path d="M2 2l11 10L24 2" stroke="var(--dark-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-inner body2">Fit matters, and we take it seriously. If your group doesn't feel like the right fit, we'll work with you to understand what's off and place you in a better-matched Hoyll.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<div class="footer-cta-outer" style="padding-bottom:0;">
+  <div class="footer-cta-wrap">
+    <div class="footer-cta-bg">
+      <video src="footer-video.mp4" autoplay muted loop playsinline></video>
+    </div>
+    <div class="footer-cta-overlay"></div>
+    <div class="footer-cta-content">
+      <h2 class="h2" style="max-width:857px; margin:0 auto 52px;">We've optimized for everything. Except what truly matters.</h2>
+      <a href="#pricing" class="btn-footer">Get Started</a>
+    </div>
+  </div>
+</div>
+<div class="footer-bar">
+  <p class="body2">© Hoyll 2026</p>
+</div>
+
+<script>
+  document.querySelectorAll('.faq-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  /* ── HAMBURGER ── */
+  const hamburger = document.querySelector('.hamburger');
+  const navLinks = document.querySelector('.nav-links');
+
+  function initHamburger() {
+    if (window.innerWidth <= 768) {
+      hamburger.style.display = 'flex';
+    } else {
+      hamburger.style.display = 'none';
+      hamburger.classList.remove('open');
+      navLinks.classList.remove('open');
+    }
+  }
+  initHamburger();
+  window.addEventListener('resize', initHamburger);
+
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+
+  // Close menu when a nav link is tapped
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      navLinks.classList.remove('open');
+    });
+  });
+
+  /* ── SMOOTH SCROLL ── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+
+  /* ── LOADER ── */
+  const loader = document.getElementById('loader');
+  window.addEventListener('load', () => {
+    setTimeout(() => loader.classList.add('hidden'), 600);
+  });
+
+  /* ── HERO: mark sub + cta as visible immediately after load ── */
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.hero .reveal').forEach(el => el.classList.add('visible'));
+    }, 700);
+  });
+
+  /* ── SCROLL REVEAL ── */
+  // Tag elements to animate
+  const revealSelectors = [
+    '.problem-section .badge',
+    '.problem-section .h3',
+    '.problem-section .arrow-divider',
+    '.problem-section .solution-photos',
+    '.real-rel h2',
+    '.real-rel > .body1',
+    '.feature-card',
+    '.why-box',
+    '.stats-wrap',
+    '.for-you h2',
+    '.criteria-item',
+    '.not-section h2',
+    '.not-item',
+    '.curated h2',
+    '.curated-header .body1',
+    '.curated-grid',
+    '.outcomes',
+    '.getting-started h2',
+    '.step',
+    '.depth h2',
+    '.depth > .body1',
+    '.depth-photos',
+    '.pricing h2',
+    '.pricing > .body1',
+    '.pricing-grid',
+    '.who h2',
+    '.founder-quote',
+    '.between-us h2',
+    '.cred-item',
+    '.faq h2',
+    '.faq-item',
+  ];
+
+  revealSelectors.forEach(sel => {
+    document.querySelectorAll(sel).forEach((el, i) => {
+      if (!el.classList.contains('reveal')) {
+        el.classList.add('reveal');
+        // stagger siblings of same type
+        el.style.transitionDelay = (i * 0.07) + 's';
+      }
+    });
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ── STAT COUNTERS ── */
+  function animateCounter(el, target, suffix, duration) {
+    const start = performance.now();
+    const isFloat = target % 1 !== 0;
+    const step = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = Math.round(eased * target);
+      el.textContent = val + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const statEls = document.querySelectorAll('.stats-content .h1');
+  const statData = [
+    { target: 50, suffix: '%' },
+    { target: 80, suffix: '+' },
+    { target: 15, suffix: '' },
+  ];
+
+  const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        statEls.forEach((el, i) => {
+          if (statData[i]) animateCounter(el, statData[i].target, statData[i].suffix, 1400);
+        });
+        statsObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+
+  const statsWrap = document.querySelector('.stats-wrap');
+  if (statsWrap) statsObserver.observe(statsWrap);
+</script>
+
+</body>
+</html>

@@ -23,7 +23,7 @@
       --font-serif: 'Newsreader', serif;
       --font-sans:  'Figtree', sans-serif;
 
-      --h1-size:    96px;
+      --h1-size:    67px;
       --h1-lh:      1;
       --h1-ls:      -3px;
 
@@ -49,7 +49,7 @@
     /* Mobile type scale */
     @media (max-width: 768px) {
       :root {
-        --h1-size:    54px;
+        --h1-size:    38px;
         --h1-ls:      -2px;
 
         --h2-size:    44px;
@@ -249,7 +249,61 @@
       margin: 44px auto 0;
     }
     .hero-sub p + p { margin-top: 24px; }
-    .hero-cta { margin-top: 52px; }
+    .hero-cta {
+      margin-top: 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .hoyll-tooltip-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+    .hoyll-tooltip-trigger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      color: var(--mid-blue);
+      padding: 0;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+    .hoyll-tooltip-trigger:hover { opacity: 1; }
+    .hoyll-tooltip {
+      position: absolute;
+      bottom: calc(100% + 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 340px;
+      background: var(--dark-blue);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 16px 18px;
+      border-radius: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      text-align: center;
+    }
+    .hoyll-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--dark-blue);
+    }
+    .hoyll-tooltip-wrap:hover .hoyll-tooltip { opacity: 1; }
     .hero-photo {
       margin: 52px 60px 0;
       border-radius: 30px;
@@ -352,6 +406,51 @@
       gap: 40px;
     }
     .stat-desc { margin-top: 16px; color: var(--white); max-width: 430px; }
+
+    /* ── HOW HOYLL IS DIFFERENT ── */
+    .how-different {
+      padding: 100px 120px;
+    }
+    .comparison-wrap {
+      overflow-x: auto;
+      margin-top: 52px;
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-sans);
+      font-size: 16px;
+      color: var(--dark-blue);
+    }
+    .comparison-table thead tr {
+      border-bottom: 2px solid var(--dark-blue);
+    }
+    .comparison-table th {
+      padding: 12px 16px;
+      font-weight: 700;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .comparison-table th.col-hoyll {
+      color: var(--mid-blue);
+    }
+    .comparison-table td {
+      padding: 16px 16px;
+      border-top: 1px solid #d8d9e8;
+      vertical-align: middle;
+    }
+    .comparison-table td.col-hoyll {
+      font-weight: 700;
+      color: var(--mid-blue);
+    }
+    .comparison-table td.row-label {
+      font-weight: 700;
+    }
+    @media (max-width: 768px) {
+      .how-different { padding: 60px 24px; }
+      .comparison-table { font-size: 14px; }
+      .comparison-table th, .comparison-table td { padding: 12px 10px; }
+    }
 
     /* ── FOR YOU IF ── */
     .for-you {
@@ -865,11 +964,19 @@
     <span class="hero-word blue" style="animation-delay:0.35s">and a life that feels more alive.</span>
   </h1>
   <div class="hero-sub body1 reveal" style="transition-delay:0.5s">
-    <p><em>Hoyll (inspired by the Welsh word "hwyl"—which nobody can pronounce) is the feeling of energy, uplift, and connection that comes from doing meaningful work with others.</em></p>
     <p>Hoyll is a facilitated peer group for successful founders and leaders who want more depth, more clarity, and more meaningful connection through consistent conversation with the right peers.</p>
   </div>
   <div class="hero-cta reveal" style="transition-delay:0.65s">
     <a href="#pricing" class="btn-blue">Apply Now</a>
+    <div class="hoyll-tooltip-wrap">
+      <button class="hoyll-tooltip-trigger" aria-label="What does Hoyll mean?">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7.25" stroke="#1E2EDE" stroke-width="1.5"/><path d="M8 7v5" stroke="#1E2EDE" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="4.5" r="0.875" fill="#1E2EDE"/></svg>
+        What does Hoyll mean?
+      </button>
+      <div class="hoyll-tooltip" role="tooltip">
+        Hoyll (inspired by the Welsh word "hwyl"—which nobody can pronounce) is the feeling of energy, uplift, and connection that comes from doing meaningful work with others.
+      </div>
+    </div>
   </div>
 </section>
 <div class="hero-photo">
@@ -901,15 +1008,16 @@
     </div>
   </div>
 
-  <div style="margin-top:60px;">
+  <p class="body1" style="max-width:900px; margin:60px auto 0;">Hoyll is a facilitated peer group where carefully matched members meet every other week in small, trusted "Hoylls" to talk through real challenges, support one another, and leave with greater clarity on what matters most.</p>
+  <div style="margin-top:40px;">
     <a href="#pricing" class="btn-blue">Find Your Hoyll</a>
   </div>
 </section>
 
 <!-- REAL RELATIONSHIPS -->
 <section class="real-rel">
-  <h2 class="h1">Real relationships.<br><span class="blue">Real progress.</span></h2>
-  <p class="body1" style="max-width:1157px; margin:40px auto 0;">A members-only community where likeminded people meet regularly in curated small group "Hoylls" to solve real problems, trade advice, and hold each other accountable.</p>
+  <h2 class="h1">Consistent connection drives<br><span class="blue">happiness and growth</span></h2>
+  <p class="body1" style="max-width:1157px; margin:40px auto 0;">We take the luck out of meeting and connecting with the right people. Every Hoyll is curated for life stage, goals, personality fit, and the kind of conversations you're ready to have.</p>
 
   <div class="feature-cards">
     <div class="feature-card">
@@ -926,10 +1034,6 @@
     </div>
   </div>
 
-  <div class="why-box">
-    <p class="body1-bold" style="margin-bottom:16px;">Why "Hoyll"?</p>
-    <p class="body1" style="max-width:1097px; margin:0 auto;">Inspired by the Welsh word "hwyl," it's a unique mix of energy, uplift, and togetherness you feel when you're doing something meaningful with other people.</p>
-  </div>
 </section>
 
 <!-- STATS -->
@@ -955,27 +1059,58 @@
   </div>
 </div>
 
-<!-- FOR YOU IF -->
-<section class="for-you">
-  <h2 class="h2"><span>Hoyll is </span><span class="blue">for you if:</span></h2>
-  <div class="criteria-grid">
-    <div class="criteria-item body2">
-      <svg width="10" height="21" viewBox="0 0 10 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M-9.17939e-07 0L10 10.5L0 21" fill="#1E2EDE"/></svg>
-      You are successful on paper but still feel something is missing.
-    </div>
-    <div class="criteria-item body2">
-      <svg width="10" height="21" viewBox="0 0 10 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M-9.17939e-07 0L10 10.5L0 21" fill="#1E2EDE"/></svg>
-      You crave depth and connection, not more superficial noise.
-    </div>
-    <div class="criteria-item body2">
-      <svg width="10" height="21" viewBox="0 0 10 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M-9.17939e-07 0L10 10.5L0 21" fill="#1E2EDE"/></svg>
-      You want meaning, purpose, and a life that feels more alive.
-    </div>
-    <div class="criteria-item body2">
-      <svg width="10" height="21" viewBox="0 0 10 21" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M-9.17939e-07 0L10 10.5L0 21" fill="#1E2EDE"/></svg>
-      You enjoy giving help and support as much as receiving it.
-    </div>
+<!-- HOW HOYLL IS DIFFERENT -->
+<section class="how-different">
+  <h2 class="h2" style="text-align:center;">How Hoyll is <span class="blue">different</span></h2>
+  <p class="body1" style="text-align:center; max-width:900px; margin:32px auto 0;">There are many ways to invest in yourself. Hoyll is different: it gives you a trusted room that compounds over time — the right people, the right structure, and a real cadence.</p>
+
+  <div class="comparison-wrap">
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="col-hoyll">Hoyll</th>
+          <th>Therapy</th>
+          <th>Mentor / Coach</th>
+          <th>Mastermind / EO-style group</th>
+          <th>Courses</th>
+          <th>AI</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="row-label">Trusted peer relationships</td>
+          <td class="col-hoyll yes">Yes</td><td>No</td><td>No</td><td>Sometimes</td><td>No</td><td>No</td>
+        </tr>
+        <tr>
+          <td class="row-label">Professionally facilitated</td>
+          <td class="col-hoyll yes">Yes</td><td>Yes</td><td>Sometimes</td><td>Sometimes</td><td>No</td><td>No</td>
+        </tr>
+        <tr>
+          <td class="row-label">Multiple perspectives, not just one</td>
+          <td class="col-hoyll yes">Yes</td><td>No</td><td>No</td><td>Yes</td><td>No</td><td>No</td>
+        </tr>
+        <tr>
+          <td class="row-label">Covers life and work together</td>
+          <td class="col-hoyll yes">Yes</td><td>Sometimes</td><td>Sometimes</td><td>Rarely</td><td>Rarely</td><td>No</td>
+        </tr>
+        <tr>
+          <td class="row-label">Built for real accountability over time</td>
+          <td class="col-hoyll yes">Yes</td><td>Sometimes</td><td>Yes</td><td>Sometimes</td><td>No</td><td>No</td>
+        </tr>
+        <tr>
+          <td class="row-label">Hand-picked for your goals and personality</td>
+          <td class="col-hoyll yes">Yes</td><td>No</td><td>No</td><td>Sometimes</td><td>No</td><td>No</td>
+        </tr>
+        <tr>
+          <td class="row-label">Consistent cadence, not one-off moments</td>
+          <td class="col-hoyll yes">Yes</td><td>Yes</td><td>Yes</td><td>Sometimes</td><td>No</td><td>No</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+
+  <p class="body1" style="text-align:center; max-width:900px; margin:52px auto 0;">Hoyll doesn't replace therapy, coaching, or retreats. It fills a gap they generally don't: a trusted, recurring room of peers who help you think better, feel less alone, and build a life that feels more alive.</p>
 </section>
 
 <!-- CURATED, NOT CROWDED -->
@@ -1054,19 +1189,19 @@
   <div class="depth-photos">
     <div class="depth-photo">
       <img src="depth-1.png" alt="">
-      <div class="depth-caption body2-bold">You crave depth, not more meaningless contacts.</div>
+      <div class="depth-caption body2-bold">You are successful on paper but still feel something is missing.</div>
     </div>
     <div class="depth-photo">
       <img src="depth-2.png" alt="">
-      <div class="depth-caption body2-bold">You're tired of influencer noise and generic advice.</div>
+      <div class="depth-caption body2-bold">You crave depth and connection, not more superficial noise.</div>
     </div>
     <div class="depth-photo">
       <img src="people-cafe.png" alt="">
-      <div class="depth-caption body2-bold">You hold a lot and don't want to do it alone.</div>
+      <div class="depth-caption body2-bold">You want meaning, purpose, and a life that feels more alive.</div>
     </div>
     <div class="depth-photo">
       <img src="hand-shaking.png" alt="">
-      <div class="depth-caption body2-bold">You're thinking seriously about what's next.</div>
+      <div class="depth-caption body2-bold">You enjoy giving help and support as much as receiving it.</div>
     </div>
   </div>
 </section>

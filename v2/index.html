@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hoyll — More meaning, stronger relationships, and a life that feels more alive.</title>
+<meta name="description" content="Hoyll is a facilitated peer group for founders and leaders who want more depth, clarity, and meaningful connection.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D1534'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-style='italic' font-size='38' fill='%23FBF9F4' text-anchor='middle'%3EH%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   HOYLL v2 — "The Warm Room"
+   Deep navy ink on warm ivory paper. One electric accent.
+   Golden-hour photography. Editorial serif at scale.
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --paper:    #FBF9F4;
+  --paper-2:  #F4F0E8;
+  --ink:      #0D1534;
+  --blue:     #1E2EDE;
+  --lavender: #BBB3ED;
+  --tint:     #EEEFF8;
+  --line:     rgba(13, 21, 52, 0.14);
+  --line-soft:rgba(13, 21, 52, 0.08);
+
+  --serif: 'Newsreader', Georgia, serif;
+  --sans:  'Figtree', -apple-system, sans-serif;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io:  cubic-bezier(0.65, 0, 0.35, 1);
+
+  --gutter: clamp(20px, 5vw, 72px);
+  --maxw: 1360px;
+}
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+body {
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--paper);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--lavender); color: var(--ink); }
+
+img, video { display: block; max-width: 100%; }
+
+/* ── film grain overlay ── */
+.grain {
+  position: fixed; inset: -100px; z-index: 999; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+
+/* ── scroll progress ── */
+.progress {
+  position: fixed; top: 0; left: 0; height: 2px; width: 100%;
+  z-index: 1002; pointer-events: none;
+}
+.progress span {
+  display: block; height: 100%; width: 100%;
+  background: var(--blue);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* ── loader ── */
+#loader {
+  position: fixed; inset: 0; z-index: 1001;
+  background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.7s var(--ease-out), visibility 0.7s;
+}
+#loader.done { opacity: 0; visibility: hidden; }
+#loader .word {
+  font-family: var(--serif); font-size: clamp(32px, 5vw, 56px);
+  font-weight: 400; letter-spacing: -0.02em; color: var(--paper);
+  opacity: 0; animation: loaderIn 0.9s var(--ease-out) 0.1s forwards;
+}
+#loader .word em { font-style: italic; color: var(--lavender); }
+@keyframes loaderIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* ── nav ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--gutter);
+  height: 76px;
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line-soft);
+  transition: transform 0.5s var(--ease-out);
+}
+.nav.hidden { transform: translateY(-100%); }
+.nav.clear {
+  background: transparent;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom-color: transparent;
+}
+.nav.clear .nav-logo, .nav.clear .nav-links a { color: #fff; }
+.nav.clear .nav-logo sup { color: var(--lavender); }
+.nav.clear .nav-links a::after { background: #fff; }
+.nav.clear .btn-ghost { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.75); color: #fff; }
+.nav.clear .btn-ghost::before { background: var(--paper); }
+.nav.clear .btn-ghost:hover { color: var(--ink); }
+.nav-logo {
+  font-family: var(--serif); font-size: 27px; font-weight: 500;
+  letter-spacing: -0.02em; color: var(--ink); text-decoration: none;
+  line-height: 1;
+}
+.nav-logo sup {
+  font-family: var(--sans); font-size: 9px; font-weight: 600; letter-spacing: 0.14em;
+  color: var(--blue); text-transform: uppercase; margin-left: 6px; vertical-align: super;
+}
+.nav-links { display: flex; gap: 36px; }
+.nav-links a {
+  font-size: 15px; font-weight: 500; color: var(--ink); text-decoration: none;
+  position: relative; letter-spacing: 0.01em; padding: 4px 0;
+}
+.nav-links a::after {
+  content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 1px;
+  background: var(--ink); transform: scaleX(0); transform-origin: right;
+  transition: transform 0.45s var(--ease-out);
+}
+.nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+/* ── buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--sans); font-size: 15px; font-weight: 600; letter-spacing: 0.01em;
+  text-decoration: none; cursor: pointer; border: none;
+  border-radius: 100px; padding: 17px 32px;
+  position: relative; overflow: hidden; z-index: 0;
+  transition: color 0.35s var(--ease-out);
+  white-space: nowrap;
+}
+.btn .arr { transition: transform 0.35s var(--ease-out); }
+.btn:hover .arr { transform: translateX(4px); }
+.btn::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit;
+  transform: translateY(101%);
+  transition: transform 0.45s var(--ease-out);
+}
+.btn:hover::before { transform: translateY(0); }
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary::before { background: var(--ink); }
+.btn-ghost {
+  background: transparent; color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+  padding: 15px 28px;
+}
+.btn-ghost::before { background: var(--ink); }
+.btn-ghost:hover { color: var(--paper); }
+.btn-light { background: var(--paper); color: var(--ink); }
+.btn-light::before { background: var(--lavender); }
+.btn-light:hover { color: var(--ink); }
+.btn:focus-visible, a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--blue); outline-offset: 3px;
+}
+
+/* ── type ── */
+.kicker {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--blue);
+}
+.kicker::before {
+  content: ''; width: 28px; height: 1.5px; background: var(--blue); display: inline-block;
+}
+.kicker.center::after {
+  content: ''; width: 28px; height: 1.5px; background: var(--blue); display: inline-block;
+}
+
+.display {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-optical-sizing: auto;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+.display em { font-style: italic; color: var(--blue); font-weight: 400; }
+.d1 { font-size: clamp(44px, 7.2vw, 96px); }
+.d2 { font-size: clamp(36px, 5vw, 64px); }
+.d3 { font-size: clamp(28px, 3.4vw, 44px); line-height: 1.12; letter-spacing: -0.02em; }
+
+.lede { font-size: clamp(18px, 1.6vw, 21px); line-height: 1.6; font-weight: 400; }
+.lede strong { font-weight: 600; }
+.muted { color: color-mix(in srgb, var(--ink) 68%, transparent); }
+
+/* ── layout ── */
+.wrap { max-width: var(--maxw); margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter); }
+section { position: relative; scroll-margin-top: 84px; }
+
+/* ── reveal ── */
+.rv { opacity: 0; transform: translateY(28px); transition: opacity 1s var(--ease-out), transform 1s var(--ease-out); }
+.rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; } }
+
+/* line-mask reveal for hero headline */
+.line-mask { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.line-mask > span {
+  display: block; transform: translateY(110%);
+  transition: transform 1.1s var(--ease-out);
+}
+.loaded .line-mask > span { transform: none; }
+.line-mask:nth-child(2) > span { transition-delay: 0.1s; }
+.line-mask:nth-child(3) > span { transition-delay: 0.2s; }
+@media (prefers-reduced-motion: reduce) { .line-mask > span { transform: none; } }
+
+/* ── hero ── */
+.hero {
+  position: relative; min-height: 100svh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  color: #fff; overflow: hidden;
+  background: var(--ink);
+}
+.hero-bg { position: absolute; inset: 0; }
+.hero-bg video, .hero-bg img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  transform: scale(1.06);
+  will-change: transform;
+}
+.hero-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(13,21,52,0.42) 0%, rgba(13,21,52,0.05) 34%, rgba(13,21,52,0.16) 62%, rgba(13,21,52,0.82) 100%),
+    linear-gradient(75deg, rgba(13,21,52,0.62) 0%, rgba(13,21,52,0.18) 40%, rgba(13,21,52,0) 58%);
+}
+.hero-content {
+  position: relative; z-index: 1;
+  width: 100%; max-width: var(--maxw); margin: 0 auto;
+  padding: 140px var(--gutter) clamp(52px, 8vh, 96px);
+}
+.hero h1 { margin-top: 26px; font-size: clamp(40px, 5.6vw, 84px); }
+.hero h1 em { color: var(--lavender); }
+.hero .kicker { color: var(--lavender); }
+.hero .kicker::before { background: var(--lavender); }
+.hero-sub { max-width: 620px; margin-top: 28px; }
+.hero-sub .lede { color: rgba(251,249,244,0.85); font-size: clamp(16.5px, 1.35vw, 19px); }
+.hero-sub .lede em { font-family: var(--serif); font-style: italic; font-size: 1.06em; color: #fff; }
+.hero-cta { margin-top: 38px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.btn-ghost-light {
+  background: transparent; color: #fff;
+  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.75);
+  padding: 15px 28px;
+}
+.btn-ghost-light::before { background: var(--paper); }
+.btn-ghost-light:hover { color: var(--ink); }
+.hero-note {
+  display: block; margin-top: 24px; font-size: 13.5px; color: rgba(251,249,244,0.6);
+}
+.hero-note a { color: rgba(251,249,244,0.85); text-decoration: underline; text-underline-offset: 3px; }
+.hero-note a:hover { color: #fff; }
+.scroll-cue {
+  position: absolute; right: var(--gutter); bottom: clamp(52px, 8vh, 96px); z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.scroll-cue .label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(251,249,244,0.65); writing-mode: vertical-rl;
+}
+.scroll-cue .track { width: 1.5px; height: 64px; background: rgba(251,249,244,0.25); overflow: hidden; }
+.scroll-cue .track::before {
+  content: ''; display: block; width: 100%; height: 100%;
+  background: var(--lavender); transform-origin: top;
+  animation: cueDrop 2.2s var(--ease-io) infinite;
+}
+@keyframes cueDrop {
+  0% { transform: translateY(-100%); }
+  55% { transform: translateY(0); }
+  100% { transform: translateY(102%); }
+}
+.frame-caption {
+  position: absolute; left: 20px; bottom: 16px; z-index: 2;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+  display: flex; align-items: center; gap: 10px;
+}
+.frame-caption .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lavender); animation: pulse 2.4s var(--ease-io) infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* ── definition strip ── */
+.definition { padding: clamp(80px, 10vw, 140px) 0; }
+.def-card {
+  max-width: 880px; margin: 0 auto; text-align: left;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: clamp(40px, 5vw, 64px) 0;
+  display: grid; grid-template-columns: auto 1fr; gap: clamp(24px, 5vw, 64px);
+  align-items: baseline;
+}
+.def-word { font-family: var(--serif); font-size: clamp(40px, 5vw, 64px); font-style: italic; letter-spacing: -0.02em; line-height: 1; color: var(--blue); }
+.def-body .def-meta { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: color-mix(in srgb, var(--ink) 55%, transparent); margin-bottom: 14px; }
+.def-body .def-meta i { font-family: var(--serif); font-style: italic; text-transform: none; letter-spacing: 0; font-size: 15px; font-weight: 400; }
+.def-body p { font-family: var(--serif); font-size: clamp(20px, 2.2vw, 27px); line-height: 1.45; letter-spacing: -0.01em; }
+.def-body .def-src { font-family: var(--sans); font-size: 13.5px; margin-top: 16px; color: color-mix(in srgb, var(--ink) 55%, transparent); }
+
+/* ── problem / solution ── */
+.shift { background: var(--paper-2); padding: clamp(90px, 11vw, 160px) 0; text-align: center; }
+.shift .statement {
+  font-family: var(--serif); font-size: clamp(26px, 3.6vw, 48px);
+  line-height: 1.18; letter-spacing: -0.02em; max-width: 1000px; margin: 32px auto 0;
+}
+.shift .statement em { font-style: italic; color: var(--blue); }
+.flow-line { width: 1.5px; height: clamp(80px, 10vw, 140px); margin: clamp(40px, 5vw, 64px) auto; position: relative; background: var(--line); overflow: visible; }
+.flow-line::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--blue); transform: scaleY(0); transform-origin: top;
+  transition: transform 1.4s var(--ease-io);
+}
+.flow-line::after {
+  content: ''; position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%) rotate(45deg);
+  width: 9px; height: 9px; border-right: 1.5px solid var(--line); border-bottom: 1.5px solid var(--line);
+  transition: border-color 0.4s 1s;
+}
+.flow-line.in::before { transform: scaleY(1); }
+.flow-line.in::after { border-color: var(--blue); }
+
+.trio { display: grid; grid-template-columns: 1fr 1.05fr 1.35fr; gap: clamp(12px, 1.6vw, 22px); margin: clamp(48px, 6vw, 80px) auto 0; max-width: 1360px; }
+.trio .ph { border-radius: 18px; overflow: hidden; aspect-ratio: 4 / 4.3; position: relative; }
+.trio .ph:nth-child(3) { aspect-ratio: auto; }
+.trio .ph img, .trio .ph video { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease-out); filter: saturate(0.9) sepia(0.07); }
+.trio .ph:hover img, .trio .ph:hover video { transform: scale(1.045); }
+.shift .after { max-width: 780px; margin: clamp(48px, 6vw, 72px) auto 0; }
+
+/* ── connection ── */
+.connection { background: var(--tint); padding: clamp(90px, 11vw, 160px) 0; }
+.connection .head { text-align: center; max-width: 900px; margin: 0 auto; }
+.cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 1.6vw, 22px); margin-top: clamp(48px, 5vw, 72px); }
+.card {
+  background: var(--paper); border-radius: 20px; padding: clamp(28px, 3vw, 40px);
+  display: flex; flex-direction: column; gap: 40px; min-height: 240px;
+  border: 1px solid var(--line-soft);
+  transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
+}
+.card:hover { transform: translateY(-5px); box-shadow: 0 24px 48px -24px rgba(13,21,52,0.22); }
+.card .icon { width: 44px; height: 44px; color: var(--blue); }
+.card .icon svg { width: 100%; height: 100%; }
+.card h3 { font-family: var(--serif); font-size: 23px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.25; margin-bottom: 8px; }
+.card p { font-size: 15.5px; color: color-mix(in srgb, var(--ink) 72%, transparent); }
+.card .body { margin-top: auto; }
+
+/* ── stats ── */
+.stats { padding: clamp(90px, 11vw, 160px) 0; background: var(--ink); color: var(--paper); overflow: hidden; }
+.stats-bg { position: absolute; inset: 0; }
+.stats-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.55; }
+.stats-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,21,52,0.55), rgba(13,21,52,0.25) 55%, rgba(13,21,52,0.6)); }
+.stats .wrap { position: relative; z-index: 1; }
+.stats .head { max-width: 720px; }
+.stats .head .kicker { color: var(--lavender); }
+.stats .head .kicker::before { background: var(--lavender); }
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(24px, 4vw, 64px); margin-top: clamp(56px, 7vw, 96px); }
+.stat { border-top: 1px solid rgba(251,249,244,0.25); padding-top: 28px; }
+.stat .num {
+  font-family: var(--serif); font-size: clamp(64px, 7vw, 110px); line-height: 0.95; letter-spacing: -0.03em;
+  font-weight: 300; color: #fff; display: flex; align-items: baseline;
+}
+.stat .num .suffix { font-size: 0.45em; margin-left: 2px; color: var(--lavender); }
+.stat p { margin-top: 18px; font-size: 15.5px; line-height: 1.55; color: rgba(251,249,244,0.75); max-width: 320px; }
+
+/* ── comparison ── */
+.compare { padding: clamp(90px, 11vw, 160px) 0; }
+.compare .head { text-align: center; max-width: 860px; margin: 0 auto clamp(48px, 5vw, 72px); }
+.compare .head p { margin-top: 24px; }
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 calc(-1 * var(--gutter)); padding: 24px var(--gutter); }
+table.matrix { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 860px; }
+.matrix th, .matrix td { text-align: center; padding: 18px 14px; font-size: 15px; border-bottom: 1px solid var(--line-soft); }
+.matrix thead th { font-family: var(--sans); font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: color-mix(in srgb, var(--ink) 60%, transparent); padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.matrix .rlabel { text-align: left; font-weight: 500; font-size: 15.5px; padding-left: 0; min-width: 230px; }
+.matrix tbody tr:last-child td { border-bottom: none; }
+.matrix .hoyll-col { background: var(--ink); color: #fff; position: relative; }
+.matrix thead .hoyll-col { color: #fff; font-family: var(--serif); font-size: 19px; text-transform: none; letter-spacing: -0.01em; font-weight: 500; border-radius: 16px 16px 0 0; border-bottom-color: rgba(255,255,255,0.2); }
+.matrix tbody tr:last-child .hoyll-col { border-radius: 0 0 16px 16px; }
+.matrix td .mark { display: inline-flex; width: 22px; height: 22px; align-items: center; justify-content: center; }
+.mark.yes svg { color: var(--blue); }
+.hoyll-col .mark.yes svg { color: var(--lavender); }
+.mark.some { color: color-mix(in srgb, var(--ink) 45%, transparent); font-size: 13px; font-weight: 500; font-style: italic; font-family: var(--serif); white-space: nowrap; }
+.mark.no { color: color-mix(in srgb, var(--ink) 25%, transparent); }
+.legend { display: flex; gap: 28px; justify-content: center; margin-top: 20px; font-size: 13px; color: color-mix(in srgb, var(--ink) 55%, transparent); flex-wrap: wrap; }
+.swipe-hint { display: none; text-align: center; font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--ink) 45%, transparent); margin-bottom: 4px; }
+@media (max-width: 900px) { .swipe-hint { display: block; } }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.compare .foot { text-align: center; max-width: 760px; margin: clamp(40px, 5vw, 56px) auto 0; }
+
+/* ── curated ── */
+.curated { background: var(--paper-2); padding: clamp(90px, 11vw, 160px) 0; }
+.cur-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(40px, 6vw, 96px); align-items: center; }
+.cur-photo { border-radius: 22px; overflow: hidden; position: relative; aspect-ratio: 3 / 3.7; }
+.cur-photo img { width: 100%; height: 100%; object-fit: cover; }
+.cur-photo .photo-tag {
+  position: absolute; left: 18px; bottom: 16px; z-index: 2;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.9); background: rgba(13,21,52,0.35); backdrop-filter: blur(8px);
+  padding: 8px 14px; border-radius: 100px;
+}
+.cur-copy .rows { margin-top: clamp(36px, 4vw, 52px); }
+.frow { display: grid; grid-template-columns: 52px 1fr; gap: 20px; padding: 26px 0; border-top: 1px solid var(--line); align-items: start; }
+.frow:last-child { border-bottom: 1px solid var(--line); }
+.frow .fic { width: 40px; height: 40px; color: var(--blue); margin-top: 2px; }
+.frow .fic svg { width: 100%; height: 100%; }
+.frow h3 { font-family: var(--serif); font-size: 21px; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 6px; }
+.frow p { font-size: 15px; color: color-mix(in srgb, var(--ink) 70%, transparent); max-width: 460px; }
+.outcomes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(48px, 6vw, 72px); justify-content: center; }
+.chip {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 14.5px; font-weight: 600;
+  border: 1px solid var(--line); border-radius: 100px; padding: 12px 22px;
+  background: var(--paper);
+}
+.chip svg { width: 16px; height: 16px; color: var(--blue); }
+.cur-quote {
+  font-family: var(--serif); font-size: clamp(20px, 2.2vw, 26px); font-style: italic; line-height: 1.45;
+  text-align: center; max-width: 820px; margin: clamp(48px, 6vw, 72px) auto 0; letter-spacing: -0.01em;
+  color: color-mix(in srgb, var(--ink) 85%, transparent);
+}
+
+/* ── steps ── */
+.steps { padding: clamp(90px, 11vw, 160px) 0; }
+.steps .head { text-align: center; }
+.step-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(20px, 2.5vw, 36px); margin-top: clamp(56px, 6vw, 84px); counter-reset: step; }
+.step { position: relative; padding-top: 28px; }
+.step::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--line);
+}
+.step::after {
+  content: ''; position: absolute; top: -3px; left: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--blue);
+}
+.step .n {
+  font-family: var(--serif); font-style: italic; font-size: clamp(44px, 4vw, 60px);
+  color: var(--lavender); line-height: 1; letter-spacing: -0.02em;
+}
+.step h3 { font-family: var(--serif); font-size: 24px; font-weight: 500; margin: 18px 0 10px; letter-spacing: -0.01em; }
+.step p { font-size: 15px; color: color-mix(in srgb, var(--ink) 70%, transparent); max-width: 280px; }
+.steps .cta { text-align: center; margin-top: clamp(48px, 6vw, 72px); }
+
+/* ── for you ── */
+.foryou { background: var(--tint); padding: clamp(90px, 11vw, 160px) 0; }
+.foryou .head { text-align: center; max-width: 820px; margin: 0 auto; }
+.fy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(14px, 1.6vw, 22px); margin-top: clamp(48px, 5vw, 72px); }
+.fy-card { border-radius: 18px; overflow: hidden; background: var(--paper); border: 1px solid var(--line-soft); transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out); }
+.fy-card:hover { transform: translateY(-5px); box-shadow: 0 24px 48px -24px rgba(13,21,52,0.25); }
+.fy-card .im { aspect-ratio: 4 / 3; overflow: hidden; }
+.fy-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease-out); filter: saturate(0.9) sepia(0.06); }
+.fy-card:hover img { transform: scale(1.05); }
+.fy-card p { font-family: var(--serif); font-size: 18.5px; line-height: 1.35; letter-spacing: -0.01em; padding: 22px 24px 26px; }
+
+/* ── pricing ── */
+.pricing { padding: clamp(90px, 11vw, 160px) 0; }
+.pricing .head { text-align: center; max-width: 720px; margin: 0 auto; }
+.pricing .head p { margin-top: 24px; }
+.price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2vw, 28px); max-width: 1040px; margin: clamp(48px, 5vw, 72px) auto 0; align-items: stretch; }
+.plan {
+  border-radius: 24px; padding: clamp(32px, 3.5vw, 48px);
+  display: flex; flex-direction: column;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+.plan.dark { background: var(--ink); color: var(--paper); border-color: var(--ink); box-shadow: 0 40px 80px -40px rgba(13,21,52,0.5); }
+.plan .pname { font-family: var(--serif); font-size: 30px; font-weight: 500; letter-spacing: -0.01em; display: flex; align-items: center; gap: 12px; }
+.plan .ptag { font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; background: var(--lavender); color: var(--ink); border-radius: 100px; padding: 6px 12px; }
+.plan .pdesc { margin-top: 18px; font-size: 15px; line-height: 1.6; color: color-mix(in srgb, var(--ink) 70%, transparent); }
+.plan.dark .pdesc { color: rgba(251,249,244,0.72); }
+.plan ul { list-style: none; margin-top: 26px; display: grid; gap: 13px; }
+.plan li { display: grid; grid-template-columns: 20px 1fr; gap: 12px; font-size: 15px; align-items: start; }
+.plan li svg { width: 17px; height: 17px; color: var(--blue); margin-top: 3px; }
+.plan.dark li svg { color: var(--lavender); }
+.plan .pprice { margin-top: auto; padding-top: 36px; font-family: var(--serif); font-size: clamp(40px, 4vw, 52px); letter-spacing: -0.02em; line-height: 1; }
+.plan .pprice span { font-family: var(--sans); font-size: 15px; letter-spacing: 0; color: color-mix(in srgb, var(--ink) 55%, transparent); }
+.plan.dark .pprice span { color: rgba(251,249,244,0.6); }
+.plan .pcta { margin-top: 26px; }
+.plan .pcta .btn { width: 100%; justify-content: center; }
+.price-note { text-align: center; font-size: 13.5px; margin-top: 28px; color: color-mix(in srgb, var(--ink) 55%, transparent); }
+
+/* ── founders ── */
+.who { background: var(--paper-2); padding: clamp(90px, 11vw, 160px) 0; text-align: center; }
+.who .statement { font-family: var(--serif); font-size: clamp(24px, 3vw, 40px); line-height: 1.25; letter-spacing: -0.02em; max-width: 920px; margin: 32px auto 0; }
+.who .statement em { font-style: italic; color: var(--blue); }
+.founders { display: flex; gap: clamp(40px, 7vw, 110px); justify-content: center; margin-top: clamp(56px, 6vw, 80px); flex-wrap: wrap; }
+.founder { max-width: 260px; }
+.founder .fp { width: 168px; height: 168px; border-radius: 50%; overflow: hidden; margin: 0 auto; border: 1px solid var(--line); padding: 6px; background: var(--paper); }
+.founder .fp img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; filter: saturate(0.92); }
+.founder h3 { font-family: var(--serif); font-size: 23px; font-weight: 500; margin-top: 22px; letter-spacing: -0.01em; }
+.founder p { font-size: 14px; margin-top: 8px; color: color-mix(in srgb, var(--ink) 62%, transparent); line-height: 1.5; }
+.who .fquote { font-family: var(--serif); font-style: italic; font-size: clamp(20px, 2.2vw, 26px); max-width: 680px; margin: clamp(56px, 6vw, 72px) auto 0; line-height: 1.4; letter-spacing: -0.01em; }
+.who .fquote::before { content: ''; display: block; width: 36px; height: 1.5px; background: var(--blue); margin: 0 auto 28px; }
+
+.creds { max-width: 880px; margin: clamp(56px, 6vw, 80px) auto 0; text-align: left; }
+.creds h3 { font-family: var(--serif); font-size: 22px; text-align: center; font-weight: 500; margin-bottom: 8px; }
+.cred-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(32px, 4vw, 56px); margin-top: 24px; }
+.cred { display: grid; grid-template-columns: 24px 1fr; gap: 16px; padding: 20px 0; border-top: 1px solid var(--line); font-size: 15px; line-height: 1.55; color: color-mix(in srgb, var(--ink) 78%, transparent); align-items: start; }
+.cred svg { width: 20px; height: 20px; color: var(--blue); margin-top: 2px; }
+
+/* ── FAQ ── */
+.faq { padding: clamp(90px, 11vw, 160px) 0; }
+.faq .grid { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
+.faq .head .kicker { margin-bottom: 24px; }
+.faq-list { border-top: 1px solid var(--line); }
+.faq-item { border-bottom: 1px solid var(--line); }
+.faq-q {
+  width: 100%; background: none; border: none; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 24px;
+  text-align: left; padding: 26px 0;
+  font-family: var(--serif); font-size: clamp(19px, 2vw, 23px); font-weight: 500; letter-spacing: -0.01em;
+  color: var(--ink);
+  transition: color 0.3s;
+}
+.faq-q:hover { color: var(--blue); }
+.faq-q .pm { flex: none; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; position: relative; transition: transform 0.5s var(--ease-out), background 0.3s, border-color 0.3s; }
+.faq-q .pm::before, .faq-q .pm::after {
+  content: ''; position: absolute; top: 50%; left: 50%; background: currentColor;
+  transform: translate(-50%, -50%);
+}
+.faq-q .pm::before { width: 12px; height: 1.5px; }
+.faq-q .pm::after { width: 1.5px; height: 12px; transition: transform 0.5s var(--ease-out); }
+.faq-item.open .faq-q .pm { transform: rotate(180deg); background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.faq-item.open .faq-q .pm::after { transform: translate(-50%, -50%) scaleY(0); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.6s var(--ease-out); }
+.faq-a .inner { padding: 0 48px 30px 0; font-size: 15.5px; line-height: 1.65; color: color-mix(in srgb, var(--ink) 72%, transparent); max-width: 640px; }
+.faq-a .inner p + p { margin-top: 14px; }
+
+/* ── footer ── */
+.final { padding: 0 clamp(12px, 2.5vw, 40px) clamp(12px, 2.5vw, 40px); }
+.final-wrap {
+  position: relative; border-radius: clamp(18px, 2.5vw, 32px); overflow: hidden;
+  padding: clamp(100px, 14vw, 200px) var(--gutter);
+  text-align: center; color: #fff;
+}
+.final-bg { position: absolute; inset: 0; }
+.final-bg video { width: 100%; height: 100%; object-fit: cover; }
+.final-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,21,52,0.72), rgba(30,46,222,0.42)); }
+.final-content { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; }
+.final-content h2 { color: #fff; }
+.final-content h2 em { color: var(--lavender); }
+.final-content .btn { margin-top: 48px; }
+.footer-bar { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 32px var(--gutter) 28px; flex-wrap: wrap; }
+.footer-bar .flogo { font-family: var(--serif); font-size: 22px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+.footer-bar nav { display: flex; gap: 28px; }
+.footer-bar nav a { font-size: 13.5px; color: color-mix(in srgb, var(--ink) 60%, transparent); text-decoration: none; }
+.footer-bar nav a:hover { color: var(--blue); }
+.footer-bar .fnote { font-size: 13px; color: color-mix(in srgb, var(--ink) 45%, transparent); font-style: italic; font-family: var(--serif); }
+
+/* ── responsive ── */
+@media (max-width: 1024px) {
+  .cards3 { grid-template-columns: 1fr 1fr; }
+  .card:last-child { grid-column: span 2; }
+  .step-grid { grid-template-columns: 1fr 1fr; gap: 40px clamp(20px, 3vw, 36px); }
+  .fy-grid { grid-template-columns: 1fr 1fr; }
+  .faq .grid { grid-template-columns: 1fr; gap: 32px; }
+}
+@media (max-width: 820px) {
+  .nav-links { display: none; }
+  .hero { padding-top: 140px; }
+  .hero-frame { aspect-ratio: 4 / 3; }
+  .def-card { grid-template-columns: 1fr; gap: 20px; }
+  .trio { grid-template-columns: 1fr 1fr; }
+  .trio .ph:nth-child(3) { grid-column: span 2; aspect-ratio: 16 / 9; }
+  .cur-grid { grid-template-columns: 1fr; }
+  .cur-photo { aspect-ratio: 4 / 3.4; }
+  .stat-row { grid-template-columns: 1fr; gap: 36px; }
+  .stat p { max-width: 100%; }
+  .price-grid { grid-template-columns: 1fr; }
+  .cred-grid { grid-template-columns: 1fr; }
+  .cards3 { grid-template-columns: 1fr; }
+  .card:last-child { grid-column: auto; }
+  .card { min-height: 0; gap: 24px; }
+}
+@media (max-width: 560px) {
+  .fy-grid { grid-template-columns: 1fr; }
+  .step-grid { grid-template-columns: 1fr; }
+  .hero-cta { flex-direction: column; align-items: flex-start; }
+  .hero-cta .btn { width: 100%; justify-content: center; }
+  .scroll-cue { display: none; }
+  .footer-bar { justify-content: center; text-align: center; }
+}
+</style>
+<noscript><style>
+  .rv, .line-mask > span { opacity: 1 !important; transform: none !important; }
+  #loader { display: none; }
+  .count::after { content: attr(data-target); }
+  .count { font-size: 0; }
+  .count::after { font-size: clamp(64px, 7vw, 110px); }
+</style></noscript>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+<div id="loader" aria-hidden="true">
+  <div class="word">Hoyll <em>/hoil/</em></div>
+</div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <a class="nav-logo" href="#top">Hoyll<sup>est. 2026</sup></a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#what">What is Hoyll</a>
+    <a href="#how">How it works</a>
+    <a href="#different">Why it's different</a>
+    <a href="#pricing">Memberships</a>
+  </nav>
+  <a href="#pricing" class="btn btn-ghost">Find your Hoyll</a>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero" id="what">
+  <div class="hero-bg" aria-hidden="true">
+    <video id="heroVideo" src="assets/hero-dusk.mp4" poster="assets/hero-dusk-poster.webp" autoplay muted loop playsinline></video>
+  </div>
+  <div class="hero-content">
+    <span class="kicker">A facilitated peer group for founders &amp; leaders</span>
+    <h1 class="display">
+      <span class="line-mask"><span>More meaning,</span></span>
+      <span class="line-mask"><span>stronger relationships,</span></span>
+      <span class="line-mask"><span>and a life that feels <em>more alive.</em></span></span>
+    </h1>
+    <div class="hero-sub rv" style="transition-delay:.45s">
+      <p class="lede">Inspired by the Welsh word <em>hwyl</em> — the feeling of uplift that comes from doing something meaningful with other people — Hoyll is a facilitated peer group for founders and leaders who want more depth, clarity, and meaningful connection.</p>
+    </div>
+    <div class="hero-cta rv" style="transition-delay:.6s">
+      <a href="#pricing" class="btn btn-primary">Apply now <span class="arr">→</span></a>
+      <a href="#how" class="btn btn-ghost-light">How it works</a>
+    </div>
+    <span class="hero-note rv" style="transition-delay:.7s">Small groups. Real conversations. Every other week. <a href="#definition">What does “Hoyll” mean?</a></span>
+  </div>
+  <div class="scroll-cue" aria-hidden="true">
+    <span class="label">Scroll</span>
+    <span class="track"></span>
+  </div>
+</section>
+
+<!-- DEFINITION -->
+<section class="definition" id="definition">
+  <div class="wrap">
+    <div class="def-card rv">
+      <div class="def-word">hwyl</div>
+      <div class="def-body">
+        <div class="def-meta">noun &nbsp;·&nbsp; Welsh &nbsp;·&nbsp; <i>/ˈhʊɪl/ — “hoyl”</i></div>
+        <p>The feeling of energy, uplift, and connection that comes from doing meaningful work with other people.</p>
+        <p class="def-src">Nobody can pronounce it. So we made it ours: <strong style="color:var(--blue); font-weight:600;">Hoyll</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM / SOLUTION -->
+<section class="shift" id="how">
+  <div class="wrap">
+    <span class="kicker center rv">The real problem</span>
+    <p class="statement rv">We've optimized supplements, routines, and calendars while ignoring one of the single greatest drivers of health, happiness, and performance.</p>
+
+    <div class="flow-line" aria-hidden="true"></div>
+
+    <span class="kicker center rv">The real solution</span>
+    <p class="statement rv">Turns out, you don't need another collagen peptide or influencer protocol. You need a core crew of people like you to talk with regularly. <em>Hoyll is that crew.</em></p>
+
+    <div class="trio rv">
+      <div class="ph"><img src="assets/people-hug.webp" alt="Two friends embracing" loading="lazy"></div>
+      <div class="ph"><video src="assets/hero.mp4" poster="assets/hero-poster.webp" autoplay muted loop playsinline aria-label="A Hoyll in session"></video><div class="frame-caption"><span class="dot"></span> A Hoyll in session</div></div>
+      <div class="ph"><img src="assets/happy-men.webp" alt="Friends in genuine conversation" loading="lazy"></div>
+    </div>
+
+    <div class="after rv">
+      <p class="lede">Hoyll is a facilitated peer group where carefully matched members meet every other week in small, trusted “Hoylls” to talk through real challenges, support one another, and leave with greater clarity on what matters most.</p>
+      <div style="margin-top:36px;"><a href="#pricing" class="btn btn-primary">Find your Hoyll <span class="arr">→</span></a></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECTION -->
+<section class="connection">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker center rv">Why it works</span>
+      <h2 class="display d2 rv" style="margin-top:24px;">Consistent connection drives <em>happiness and growth</em></h2>
+      <p class="lede muted rv" style="margin-top:24px; max-width:760px; margin-left:auto; margin-right:auto;">We take the luck out of meeting and connecting with the right people. Every Hoyll is curated for life stage, goals, personality fit, and meaningful conversations.</p>
+    </div>
+    <div class="cards3">
+      <div class="card rv">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="15" cy="16" r="6"/><circle cx="30" cy="18" r="4.5"/><path d="M5 36c0-6 4.5-10 10-10s10 4 10 10M24.5 34c.8-4.5 3.5-7 7-7 3.8 0 6.8 2.6 7.5 7"/></svg>
+        </div>
+        <div class="body">
+          <h3>6–8 person small groups</h3>
+          <p>Carefully curated by experts — the right room, not a random one.</p>
+        </div>
+      </div>
+      <div class="card rv" style="transition-delay:.12s">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="9" width="30" height="28" rx="4"/><path d="M7 17h30M15 5v7M29 5v7"/><circle cx="17" cy="25" r="2" fill="currentColor" stroke="none"/><circle cx="27" cy="31" r="2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <div class="body">
+          <h3>Facilitated bi-weekly sessions</h3>
+          <p>Designed to go deep, not wide — 90 minutes that actually move things.</p>
+        </div>
+      </div>
+      <div class="card rv" style="transition-delay:.24s">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 32L20 20l6 6L38 14"/><path d="M30 14h8v8"/><path d="M8 38h28" opacity=".35"/></svg>
+        </div>
+        <div class="body">
+          <h3>Clear decisions and next steps</h3>
+          <p>Across work, life, and everything in between.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stats-bg" aria-hidden="true"><img src="assets/dawn.webp" alt="" loading="lazy"></div>
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker rv">The evidence</span>
+      <h2 class="display d2 rv" style="margin-top:24px; color:#fff;">Connection isn't soft. <br>It's <em style="color:var(--lavender)">survival.</em></h2>
+    </div>
+    <div class="stat-row">
+      <div class="stat rv">
+        <div class="num"><span class="count" data-target="50">0</span><span class="suffix">%</span></div>
+        <p>Strong social relationships are linked to a 50% higher chance of living longer.</p>
+      </div>
+      <div class="stat rv" style="transition-delay:.12s">
+        <div class="num"><span class="count" data-target="80">0</span><span class="suffix">yrs</span></div>
+        <p>An 80-year Harvard study found that good relationships best predict long-term happiness and health.</p>
+      </div>
+      <div class="stat rv" style="transition-delay:.24s">
+        <div class="num"><span class="count" data-target="15">0</span><span class="suffix">/day</span></div>
+        <p>The Surgeon General warns that low social connection harms health like smoking 15 cigarettes a day.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="compare" id="different">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker center rv">The honest comparison</span>
+      <h2 class="display d2 rv" style="margin-top:24px;">How Hoyll is <em>different</em></h2>
+      <p class="lede muted rv">There are many ways to invest in yourself. Hoyll is different: it gives you a trusted room that compounds over time — the right people, the right structure, and a real cadence.</p>
+    </div>
+    <div class="rv">
+      <p class="swipe-hint">Swipe to compare →</p>
+      <div class="table-scroll">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th class="rlabel" scope="col"></th>
+              <th class="hoyll-col" scope="col">Hoyll</th>
+              <th scope="col">Therapy</th>
+              <th scope="col">Mentor / Coach</th>
+              <th scope="col">Mastermind</th>
+              <th scope="col">Courses</th>
+              <th scope="col">AI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="rlabel">Trusted peer relationships</td><td class="hoyll-col"><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark no">—</span></td><td><span class="mark no">—</span></td><td><span class="mark some">sometimes</span></td><td><span class="mark no">—</span></td><td><span class="mark no">—</span></td></tr>
+            <tr><td class="rlabel">Professionally facilitated</td><td class="hoyll-col"><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark some">sometimes</span></td><td><span class="mark some">sometimes</span></td><td><span class="mark no">—</span></td><td><span class="mark no">—</span></td></tr>
+            <tr><td class="rlabel">Multiple perspectives, not just one</td><td class="hoyll-col"><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark no">—</span></td><td><span class="mark no">—</span></td><td><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark no">—</span></td><td><span class="mark no">—</span></td></tr>
+            <tr><td class="rlabel">Covers life and work together</td><td class="hoyll-col"><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark some">sometimes</span></td><td><span class="mark some">sometimes</span></td><td><span class="mark some">rarely</span></td><td><span class="mark some">rarely</span></td><td><span class="mark no">—</span></td></tr>
+            <tr><td class="rlabel">Built for real accountability over time</td><td class="hoyll-col"><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark some">sometimes</span></td><td><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark some">sometimes</span></td><td><span class="mark no">—</span></td><td><span class="mark no">—</span></td></tr>
+            <tr><td class="rlabel">Hand-picked for your goals and personality</td><td class="hoyll-col"><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark no">—</span></td><td><span class="mark no">—</span></td><td><span class="mark some">sometimes</span></td><td><span class="mark no">—</span></td><td><span class="mark no">—</span></td></tr>
+            <tr><td class="rlabel">Consistent cadence, not one-off moments</td><td class="hoyll-col"><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark yes"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg></span></td><td><span class="mark some">sometimes</span></td><td><span class="mark no">—</span></td><td><span class="mark no">—</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <span><svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="#1E2EDE" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg> yes</span>
+        <span><i style="font-family:var(--serif)">sometimes</i></span>
+        <span>— no</span>
+      </div>
+    </div>
+    <p class="lede muted foot rv">Hoyll doesn't replace therapy, coaching, or retreats. It fills a gap they generally don't: a trusted, recurring room of peers who help you think better, feel less alone, and build a life that feels more alive.</p>
+  </div>
+</section>
+
+<!-- CURATED -->
+<section class="curated">
+  <div class="wrap">
+    <div class="cur-grid">
+      <div class="cur-photo rv">
+        <img src="assets/curated-new.webp" alt="Two members in deep one-on-one conversation" loading="lazy">
+        <span class="photo-tag">Between sessions</span>
+      </div>
+      <div class="cur-copy">
+        <span class="kicker rv">What's included</span>
+        <h2 class="display d2 rv" style="margin-top:24px;">Curated, <em>not crowded</em></h2>
+        <div class="rows">
+          <div class="frow rv">
+            <div class="fic" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="20" cy="20" r="15"/><path d="M20 12v8l5.5 4"/></svg></div>
+            <div>
+              <h3>Vetted community</h3>
+              <p>Carefully vetted members aligned in values, life stage, and commitment — so you're with people like you.</p>
+            </div>
+          </div>
+          <div class="frow rv">
+            <div class="fic" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 30V14a3 3 0 013-3h18a3 3 0 013 3v11a3 3 0 01-3 3H14z"/><path d="M14 17h12M14 22h8"/></svg></div>
+            <div>
+              <h3>Bi-weekly 90-minute sessions</h3>
+              <p>Structured feedback and accountability with peers you respect — and genuinely enjoy supporting.</p>
+            </div>
+          </div>
+          <div class="frow rv">
+            <div class="fic" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="11" width="26" height="20" rx="3"/><path d="M7 15l13 9 13-9" /><circle cx="31" cy="10" r="4.5" fill="var(--paper-2)"/><path d="M29 10l1.5 1.5L33.5 8.5"/></svg></div>
+            <div>
+              <h3>Members-only space</h3>
+              <p>A private space to celebrate wins, ask questions, share resources, and stay connected between sessions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="outcomes rv">
+      <span class="chip"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 17s-6.5-4.2-6.5-8.7A3.8 3.8 0 0110 5.6a3.8 3.8 0 016.5 2.7C16.5 12.8 10 17 10 17z"/></svg> Meaningful relationships</span>
+      <span class="chip"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="7.5"/><path d="M7 10.5l2 2 4-4.5"/></svg> Better decisions</span>
+      <span class="chip"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 16L16 4M16 4h-6M16 4v6"/></svg> Accountability and results</span>
+      <span class="chip"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3v14M3 10h14" opacity=".0"/><path d="M4 14c2-6 10-6 12-8M4 14c4 1 10 0 12-8" /></svg> Capacity and resilience</span>
+    </div>
+
+    <p class="cur-quote rv">Each 90-minute session is professionally facilitated and designed to help members think more clearly, go deeper faster, and leave with real momentum. Members bring a challenge, decision, or opportunity — and get honest perspective, trusted support, and clear next steps in return.</p>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="steps">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker center rv">The path in</span>
+      <h2 class="display d2 rv" style="margin-top:24px;">Getting started <em>is easy</em></h2>
+    </div>
+    <div class="step-grid">
+      <div class="step rv">
+        <div class="n">01</div>
+        <h3>Apply</h3>
+        <p>A short application to understand your goals, pace, and fit. No pitches, just clarity.</p>
+      </div>
+      <div class="step rv" style="transition-delay:.1s">
+        <div class="n">02</div>
+        <h3>Match</h3>
+        <p>We don't “dump you into a community.” We place every member into a curated Hoyll based on life stage, goals, pace, and personality fit.</p>
+      </div>
+      <div class="step rv" style="transition-delay:.2s">
+        <div class="n">03</div>
+        <h3>Meet</h3>
+        <p>Meet bi-weekly for 90 minutes with the same people, same time, same day.</p>
+      </div>
+      <div class="step rv" style="transition-delay:.3s">
+        <div class="n">04</div>
+        <h3>Move</h3>
+        <p>Turn insight into action. Decide next steps and get real follow-through from the group.</p>
+      </div>
+    </div>
+    <div class="cta rv"><a href="#pricing" class="btn btn-primary">Find your Hoyll <span class="arr">→</span></a></div>
+  </div>
+</section>
+
+<!-- FOR YOU -->
+<section class="foryou">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker center rv">Depth, discretion &amp; follow-through</span>
+      <h2 class="display d2 rv" style="margin-top:24px;">Hoyll is for you <em>if…</em></h2>
+    </div>
+    <div class="fy-grid">
+      <div class="fy-card rv">
+        <div class="im"><img src="assets/depth-1.webp" alt="" loading="lazy"></div>
+        <p>You are successful on paper but still feel something is missing.</p>
+      </div>
+      <div class="fy-card rv" style="transition-delay:.1s">
+        <div class="im"><img src="assets/toast.webp" alt="" loading="lazy"></div>
+        <p>You crave depth and connection, not more superficial noise.</p>
+      </div>
+      <div class="fy-card rv" style="transition-delay:.2s">
+        <div class="im"><img src="assets/people-cafe.webp" alt="" loading="lazy"></div>
+        <p>You want meaning, purpose, and a life that feels more alive.</p>
+      </div>
+      <div class="fy-card rv" style="transition-delay:.3s">
+        <div class="im"><img src="assets/warm-handshake.webp" alt="" loading="lazy"></div>
+        <p>You enjoy giving help and support as much as receiving it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker center rv">Memberships</span>
+      <h2 class="display d2 rv" style="margin-top:24px;">Join <em>Hoyll</em></h2>
+      <p class="lede muted rv">Hoyll begins with a 3-month commitment. After that, members can continue in 6-month extensions.</p>
+    </div>
+    <div class="price-grid">
+      <div class="plan rv">
+        <div class="pname">Hoyll</div>
+        <p class="pdesc">For busy professionals in high-responsibility executive roles who want to turn consistent, high-trust connection into better performance, clearer thinking, and greater personal and professional satisfaction.</p>
+        <ul>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg> Vetted, premium member community</li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg> 90-minute bi-weekly facilitated peer roundtables</li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg> Clearer decisions, next steps, and accountability</li>
+        </ul>
+        <div class="pprice">$295 <span>/ month</span></div>
+        <div class="pcta"><a href="#" class="btn btn-primary">Get started <span class="arr">→</span></a></div>
+      </div>
+      <div class="plan dark rv" style="transition-delay:.12s">
+        <div class="pname">Hoyll+ <span class="ptag">With 1:1 coaching</span></div>
+        <p class="pdesc">For busy professionals in high-responsibility executive roles who want everything in Hoyll, plus more personalized coaching and accountability between group sessions.</p>
+        <ul>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg> Everything in Hoyll</li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg> Private 1:1 coaching every other week</li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10.5l4 4 8-9"/></svg> Added clarity, accountability, and follow-through</li>
+        </ul>
+        <div class="pprice" style="color:#fff;">$895 <span>/ month</span></div>
+        <div class="pcta"><a href="#" class="btn btn-light">Get started <span class="arr">→</span></a></div>
+      </div>
+    </div>
+    <p class="price-note rv">Every membership starts with the same application — we'll help you find the right fit.</p>
+  </div>
+</section>
+
+<!-- WHO -->
+<section class="who">
+  <div class="wrap">
+    <span class="kicker center rv">Who we are</span>
+    <p class="statement rv">We didn't start Hoyll to teach frameworks or sell advice. We started it because the most meaningful progress we saw came from <em>having the right people in the room</em> and going deep with them.</p>
+
+    <div class="founders">
+      <div class="founder rv">
+        <div class="fp"><img src="assets/founder-dave.webp" alt="Dave Colina" loading="lazy"></div>
+        <h3>Dave Colina</h3>
+        <p>3× Founder &amp; CEO · Inc. 5000 Awardee · Community Builder</p>
+      </div>
+      <div class="founder rv" style="transition-delay:.12s">
+        <div class="fp"><img src="assets/founder-markus.webp" alt="Markus Karjalainen" loading="lazy"></div>
+        <h3>Markus Karjalainen</h3>
+        <p>3× Founder &amp; CMO · Community Builder · Avid Cyclist</p>
+      </div>
+    </div>
+
+    <p class="fquote rv">“We were built in high-pressure environments. Now we're building the support we wished we had.”</p>
+
+    <div class="creds rv">
+      <h3>Between us, we bring:</h3>
+      <div class="cred-grid">
+        <div class="cred"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17V8l7-5 7 5v9"/><path d="M8 17v-5h4v5"/></svg> Over two decades of building, leading and operating teams within consumer brands</div>
+        <div class="cred"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="3"/><circle cx="14" cy="9" r="2.4"/><path d="M2.5 17c.5-3 2.4-4.6 4.5-4.6s4 1.6 4.5 4.6M12 16.6c.4-2.2 1.7-3.4 3.2-3.4 1.4 0 2.6 1 3.1 3.2" opacity=".9"/></svg> Two years running small, intimate coaching groups for founders</div>
+        <div class="cred"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14c0-5 3-8 6-8s6 3 6 8" /><path d="M10 6V3M4.5 15.5h11" /></svg> Facilitated conversations focused on clarity, accountability, and follow-through</div>
+        <div class="cred"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="7.5"/><path d="M10 5.5v4.8l3.2 2.4"/></svg> An understanding of how isolating high performance can be</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="wrap">
+    <div class="grid">
+      <div class="head">
+        <span class="kicker rv">Questions</span>
+        <h2 class="display d2 rv" style="margin-top:24px;">Fair <em>questions.</em></h2>
+        <p class="lede muted rv" style="margin-top:20px; max-width:340px;">The things people actually ask before they join.</p>
+      </div>
+      <div class="faq-list rv">
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">How is Hoyll actually different from other peer groups?<span class="pm" aria-hidden="true"></span></button>
+          <div class="faq-a"><div class="inner">
+            <p>Most peer groups are either too tactical (all business, no life), too vague (just “community”), or too inconsistent to create real trust. Hoyll is built around one core idea: consistent, high-trust connection is a performance lever.</p>
+            <p>Each group is professionally facilitated, meets on a reliable cadence, and follows a simple structure (CORE check-in, rotations, commitments) so conversations actually lead to clarity, action, and stronger relationships over time.</p>
+          </div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Who's leading the groups?<span class="pm" aria-hidden="true"></span></button>
+          <div class="faq-a"><div class="inner">
+            <p>Every Hoyll is led by a trained facilitator who keeps the conversation focused, balanced, and useful. Their job is not to lecture or play guru. Their job is to create the conditions for a great room: trust, structure, depth, and accountability.</p>
+            <p>They help each member get heard, keep the group on track, and make sure sessions lead to clear next steps, not just good conversation.</p>
+          </div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">How do you decide who I'm grouped with?<span class="pm" aria-hidden="true"></span></button>
+          <div class="faq-a"><div class="inner">
+            <p>We don't just drop you into a big community and hope for the best. We curate each Hoyll based on several factors like life stage, goals, pace, personality fit, and what kind of support you want right now.</p>
+            <p>The goal is simple: put you in a room with people you'll genuinely click with and respect, so trust builds quickly and the conversations are immediately useful.</p>
+          </div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">What happens if my group isn't the right fit?<span class="pm" aria-hidden="true"></span></button>
+          <div class="faq-a"><div class="inner">
+            <p>Fit matters, and we take it seriously. If your group doesn't feel like the right fit, we'll work with you to understand what's off and place you in a better-matched Hoyll.</p>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="final-wrap">
+    <div class="final-bg" aria-hidden="true"><video src="assets/clouds.mp4" autoplay muted loop playsinline></video></div>
+    <div class="final-content">
+      <h2 class="display d2 rv">We've optimized for everything. <em>Except what truly matters.</em></h2>
+      <a href="#pricing" class="btn btn-light rv" style="transition-delay:.15s">Get started <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer-bar">
+  <a class="flogo" href="#top">Hoyll</a>
+  <nav aria-label="Footer">
+    <a href="#what">What is Hoyll</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Memberships</a>
+  </nav>
+  <span class="fnote">hwyl, n. — the feeling of being fully alive, together. © Hoyll 2026</span>
+</footer>
+
+</main>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* loader */
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      document.getElementById('loader').classList.add('done');
+      document.body.classList.add('loaded');
+    }, reduced ? 0 : 650);
+  });
+  /* safety: if load stalls, reveal anyway */
+  setTimeout(function () {
+    document.getElementById('loader').classList.add('done');
+    document.body.classList.add('loaded');
+  }, 2600);
+
+  /* reveals */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.rv, .flow-line').forEach(function (el) { io.observe(el); });
+
+  /* count-up */
+  var cio = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      cio.unobserve(e.target);
+      var el = e.target, target = +el.dataset.target, t0 = null, dur = 1600;
+      if (reduced) { el.textContent = target; return; }
+      function tick(t) {
+        if (!t0) t0 = t;
+        var p = Math.min((t - t0) / dur, 1);
+        var eased = 1 - Math.pow(1 - p, 4);
+        el.textContent = Math.round(target * eased);
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.count').forEach(function (el) { cio.observe(el); });
+
+  /* progress bar + nav hide/show + nav clear-over-hero */
+  var bar = document.getElementById('progressBar');
+  var nav = document.getElementById('nav');
+  var hero = document.querySelector('.hero');
+  var lastY = 0;
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.transform = 'scaleX(' + (max ? h.scrollTop / max : 0) + ')';
+    var y = h.scrollTop;
+    if (y > 400 && y > lastY + 4) nav.classList.add('hidden');
+    else if (y < lastY - 4 || y < 400) nav.classList.remove('hidden');
+    nav.classList.toggle('clear', y < hero.offsetHeight - 140);
+    lastY = y;
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* hero video parallax (background drifts slower than scroll) */
+  var heroVid = document.getElementById('heroVideo');
+  if (heroVid && !reduced) {
+    window.addEventListener('scroll', function () {
+      var y = window.scrollY;
+      if (y > window.innerHeight) return;
+      heroVid.style.transform = 'scale(1.06) translateY(' + (y * 0.18) + 'px)';
+    }, { passive: true });
+  }
+
+  /* respect reduced motion for ambient videos */
+  if (reduced) {
+    document.querySelectorAll('video[autoplay]').forEach(function (v) { v.pause(); });
+  }
+
+  /* FAQ */
+  document.querySelectorAll('.faq-item').forEach(function (item) {
+    var q = item.querySelector('.faq-q');
+    var a = item.querySelector('.faq-a');
+    q.addEventListener('click', function () {
+      var open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function (o) {
+        o.classList.remove('open');
+        o.querySelector('.faq-a').style.maxHeight = null;
+        o.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+      });
+      if (!open) {
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+        q.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
